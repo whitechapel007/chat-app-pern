@@ -25,7 +25,11 @@ export const validate = (
     }
 
     // Replace the original data with validated and sanitized data
-    req[source] = value;
+    // Note: req.query is read-only in Express, so we skip assignment for query
+    if (source !== "query") {
+      req[source] = value;
+    }
+    // For query validation, we just validate but don't replace the original
     next();
   };
 };

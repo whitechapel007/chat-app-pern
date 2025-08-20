@@ -155,8 +155,8 @@ export const requireOwnership = (resourceIdParam: string = "id") => {
 const requestCounts = new Map<string, { count: number; resetTime: number }>();
 
 export const rateLimit = (
-  maxRequests: number = 100,
-  windowMs: number = 15 * 60 * 1000
+  maxRequests: number = 1200,
+  windowMs: number = 9 * 60 * 1000
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const clientId = req.ip || req.connection.remoteAddress || "unknown";

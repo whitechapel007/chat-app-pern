@@ -10,6 +10,7 @@ import {
 } from "./middleware/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -47,8 +48,12 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
+// Serve static files (uploaded images)
+app.use("/uploads", express.static("uploads"));
+
 // Global rate limiting
-app.use(rateLimit(1000, 15 * 60 * 1000)); // 1000 requests per 15 minutes
+app.use(rateLimit(1200, 9 * 60 * 1000));
+// 1200 requests per 9 minutes (1000 for auth routes)
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -61,9 +66,9 @@ app.get("/health", (req, res) => {
 });
 
 // Routes
-
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/users", userRoutes);
 
 // 404 handler for undefined routes
 app.use(notFoundHandler);

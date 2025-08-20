@@ -24,35 +24,89 @@ model User {
   lastSeen DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  conversationsIds String[]
-  conversations Conversation[]
-  messages Messages[]
+
+  // Messages sent by this user
+  sentMessages Message[] @relation("MessageSender")
+
+  // Conversations this user participates in
+  participations ConversationParticipant[]
+
+  @@map("users")
 }
 
 
-model Conversation{
+model Conversation {
   id String @id @default(cuid())
-  users User[]
-  userIds String[]
+  type ConversationType @default(DIRECT)
+  name String? // For group chats
+  description String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  messages Messages[]
-  messagesId String[]
+
+  // Messages in this conversation
+  messages Message[]
+
+  // Participants in this conversation
+  participants ConversationParticipant[]
+
+  @@map("conversations")
 }
 
 
-model Messages{
+model Message {
   id String @id @default(cuid())
-  body String
+  content String
+  type MessageType @default(TEXT)
   senderId String
-  sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
   conversationId String
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  replyToId String? // For message replies
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relations
+  sender User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  replyTo Message? @relation("MessageReply", fields: [replyToId], references: [id])
+  replies Message[] @relation("MessageReply")
+
+  @@map("messages")
 }
 
-enum Gender{
+model ConversationParticipant {
+  id String @id @default(cuid())
+  conversationId String
+  userId String
+  role ParticipantRole @default(MEMBER)
+  joinedAt DateTime @default(now())
+  leftAt DateTime?
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+// Enums
+enum Gender {
   male
   female
+}
+
+enum ConversationType {
+  DIRECT
+  GROUP
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  SYSTEM
+}
+
+enum ParticipantRole {
+  ADMIN
+  MEMBER
 }
