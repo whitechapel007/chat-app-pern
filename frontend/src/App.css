@@ -1,42 +1,57 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&display=swap");
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* Global styles */
+body {
+  font-family: "Red Hat Display", sans-serif;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
+/* Custom design tokens */
+@theme {
+  --color-primary-50: #f0f9f4;
+  --color-primary-100: #dcf2e4;
+  --color-primary-200: #bce5cd;
+  --color-primary-300: #8dd1aa;
+  --color-primary-400: #56b380;
+  --color-primary-500: #25d366; /* WhatsApp green */
+  --color-primary-600: #1da851;
+  --color-primary-700: #1a8544;
+  --color-primary-800: #196a39;
+  --color-primary-900: #175730;
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+  --color-slate-400: #888888;
+  --color-slate-500: #e8e6e4;
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
 
-.card {
-  padding: 2em;
-}
+  --color-accent-50: #fef7ee;
+  --color-accent-100: #fdedd6;
+  --color-accent-200: #fbd7ac;
+  --color-accent-300: #f8bb77;
+  --color-accent-400: #f59540;
+  --color-accent-500: #f37a1a;
+  --color-accent-600: #e45f10;
+  --color-accent-700: #bd4710;
+  --color-accent-800: #973815;
+  --color-accent-900: #7a2e14;
 
-.read-the-docs {
-  color: #888;
+  --color-chat-bg: #0a0a0a;
+  --color-chat-sidebar: #1f2937;
+  --color-chat-message: #374151;
+  --color-chat-bubble: #25d366;
+  --color-chat-text: #f9fafb;
+
+  --font-display: "Red Hat Display", sans-serif;
+  --font-script: "Dancing Script", cursive;
 }
