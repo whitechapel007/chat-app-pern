@@ -43,7 +43,7 @@ app.use(
 );
 
 // General middleware
-app.use(morgan("combined")); // More detailed logging
+app.use(morgan("short")); // More detailed logging
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());

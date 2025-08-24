@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch backend/src --exec \"node --loader ts-node/esm backend/src/index.ts\"",
-    "server": "node --loader ts-node/esm backend/src/index.ts",
     "client": "cd frontend && npm run dev",
-    "dev:all": "concurrently \"npm run dev\" \"npm run client\""
+    "dev:all": "concurrently \"npm run dev\" \"npm run client\"",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
