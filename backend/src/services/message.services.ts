@@ -849,3 +849,28 @@ export const getUserConversations = async (userId: string) => {
 
   return conversations;
 };
+
+// Get conversation by ID with participants
+export const getConversationById = async (conversationId: string) => {
+  const conversation = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+    include: {
+      participants: {
+        where: { leftAt: null },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              fullName: true,
+              profilePic: true,
+              isOnline: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return conversation;
+};

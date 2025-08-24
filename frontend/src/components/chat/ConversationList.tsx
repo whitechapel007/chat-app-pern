@@ -1,3 +1,4 @@
+import { useSocket } from "../../hooks/useSocket";
 import { useAuthStore } from "../../store/authStore";
 import { useChatStore } from "../../store/chatStore";
 import type { Conversation } from "../../types/chat";
@@ -15,6 +16,8 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
     selectConversation,
     searchQuery,
   } = useChatStore();
+
+  const { isUserOnline } = useSocket();
 
   // Ensure conversations is always an array
   const conversations = Array.isArray(rawConversations) ? rawConversations : [];
@@ -57,7 +60,9 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
     const otherParticipant = conversation.participants.find(
       (p) => p.userId !== user?.id
     );
-    return otherParticipant?.user.isOnline || false;
+
+    // Use real-time socket data instead of database value
+    return otherParticipant ? isUserOnline(otherParticipant.userId) : false;
   };
 
   const formatLastMessageTime = (dateString: string) => {

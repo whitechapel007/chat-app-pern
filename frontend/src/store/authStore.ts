@@ -56,12 +56,21 @@ export const useAuthStore = create<AuthStore>()(
 
       setInitialized: (isInitialized) => set({ isInitialized }),
 
-      login: (user) =>
+      login: async (user) => {
         set({
           user,
           isAuthenticated: true,
           error: null,
-        }),
+        });
+
+        // Connect to socket after successful login
+        try {
+          const { useSocketStore } = await import("./socketStore");
+          useSocketStore.getState().connect(user.id);
+        } catch (error) {
+          console.error("Failed to connect socket:", error);
+        }
+      },
 
       logout: async () => {
         try {
@@ -71,6 +80,14 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error) {
           console.warn("Logout API call failed:", error);
         } finally {
+          // Disconnect socket before clearing state
+          try {
+            const { useSocketStore } = await import("./socketStore");
+            useSocketStore.getState().disconnect();
+          } catch (error) {
+            console.error("Failed to disconnect socket:", error);
+          }
+
           // Always clear local state regardless of API call result
           set({
             user: null,

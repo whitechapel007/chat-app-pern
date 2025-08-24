@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../middleware/error.middleware";
 import * as userService from "../services/user.services";
 import { formatSuccessResponse } from "../utils/errors";
+import { getOnlineUsers, getUserSocketId, isUserOnline } from "../socket";
 
 // Get all users with pagination and search
 export const getAllUsers = asyncHandler(
@@ -233,5 +234,27 @@ export const getUsersForConversation = asyncHandler(
           "Users for conversation retrieved successfully"
         )
       );
+  }
+);
+
+export const getUsersOnline = asyncHandler(
+  async (req: Request, res: Response) => {
+    const onlineUserIds = getOnlineUsers();
+    const onlineUsersWithSockets = onlineUserIds.map((userId) => ({
+      userId,
+      socketId: getUserSocketId(userId),
+      isOnline: isUserOnline(userId),
+    }));
+
+    res.json(
+      formatSuccessResponse(
+        {
+          onlineUsers: onlineUsersWithSockets,
+          totalOnline: onlineUserIds.length,
+          timestamp: new Date().toISOString(),
+        },
+        "Online users retrieved successfully"
+      )
+    );
   }
 );

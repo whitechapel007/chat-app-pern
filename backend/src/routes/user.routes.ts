@@ -13,6 +13,7 @@ import {
   searchUsers,
   updateCurrentUserProfile,
   updateOnlineStatus,
+  getUsersOnline
 } from "../controllers/user.controller";
 import { authenticateToken } from "../middleware/auth.middleware";
 import {
@@ -22,6 +23,9 @@ import {
   validateParams,
   validateQuery,
 } from "../middleware/validation.middleware";
+import { getOnlineUsers, isUserOnline, getUserSocketId } from "../socket";
+import type{ Request, Response } from "express";
+
 import {
   conversationIdParamSchema,
   messageQuerySchema,
@@ -62,6 +66,9 @@ router.patch(
 
 // Get current user statistics
 router.get("/me/stats", getUserStats);
+
+// Get online users and socket mapping info
+router.get("/online", getOnlineUsers);
 
 // Get current user's conversations
 router.get("/conversations", getConversations);

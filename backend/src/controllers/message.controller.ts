@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../middleware/error.middleware";
 import * as messageService from "../services/message.services";
 import { formatSuccessResponse } from "../utils/errors";
+import { sendToUser, sendToUsers, isUserOnline } from "../socket";
 
 // Extend Request type for multer
 interface MulterRequest extends Request {
@@ -58,6 +59,23 @@ export const sendDirectMessage = asyncHandler(
       receiverId,
       messageData
     );
+
+    // Send real-time notification to receiver if they're online
+    if (isUserOnline(receiverId)) {
+      const notificationSent = sendToUser(receiverId, "new_message", {
+        message: result.message,
+        conversation: result.conversation,
+        sender: req.user,
+      });
+      console.log(
+        `📱 Real-time notification sent to user ${receiverId}: ${notificationSent}`
+      );
+    } else {
+      console.log(
+        `📴 User ${receiverId} is offline, notification will be delivered when they come online`
+      );
+    }
+
     res
       .status(201)
       .json(formatSuccessResponse(result, "Message sent successfully"));
@@ -181,6 +199,29 @@ export const sendMessage = asyncHandler(
       conversationId,
       messageData
     );
+
+    // Send real-time notifications to all participants except sender
+    // First, get the conversation with participants
+    const conversation = await messageService.getConversationById(
+      conversationId
+    );
+
+    if (conversation && conversation.participants) {
+      const participantIds = conversation.participants
+        .map((p: any) => p.userId)
+        .filter((userId: string) => userId !== senderId); // Exclude sender
+
+      const sentTo = sendToUsers(participantIds, "new_message", {
+        message: result,
+        conversation: conversation,
+        sender: req.user,
+      });
+
+      console.log(
+        `📱 Group message notification sent to ${sentTo.length}/${participantIds.length} participants`
+      );
+      console.log(`📱 Online participants: ${sentTo.join(", ")}`);
+    }
 
     res
       .status(201)

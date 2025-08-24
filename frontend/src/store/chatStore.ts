@@ -12,13 +12,11 @@ interface ChatActions {
   // Conversations
   loadConversations: () => Promise<void>;
   selectConversation: (conversationId: string | null) => void;
-
   // Messages
   loadMessages: (conversationId: string) => Promise<void>;
   sendMessage: (conversationId: string, data: SendMessageData) => Promise<void>;
   sendDirectMessage: (userId: string, data: SendMessageData) => Promise<void>;
-  addMessage: (message: Message) => void;
-
+  addMessage: (conversationId: string, message: Message) => void;
   // Users
   loadOnlineUsers: () => Promise<void>;
   selectUser: (userId: string | null) => void;
@@ -196,14 +194,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     }
   },
 
-  addMessage: (message) => {
+  addMessage: (conversationId, message) => {
     set((state) => ({
       messages: {
         ...state.messages,
-        [message.conversationId]: [
-          ...(state.messages[message.conversationId] || []),
-          message,
-        ],
+        [conversationId]: [...(state.messages[conversationId] || []), message],
       },
     }));
   },

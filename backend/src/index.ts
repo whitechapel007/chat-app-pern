@@ -17,8 +17,13 @@ const server = createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(",") ?? ["http://localhost:5173"],
+    origin: process.env.CORS_ORIGIN?.split(",") ?? [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ],
     credentials: true,
+    methods: ["GET", "POST"],
   },
   pingTimeout: 20000,
   pingInterval: 20000,

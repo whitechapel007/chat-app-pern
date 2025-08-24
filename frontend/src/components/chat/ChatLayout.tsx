@@ -2,9 +2,12 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useChatStore } from "../../store/chatStore";
+import SocketDebug from "../debug/SocketDebug";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import ChatArea from "./ChatArea";
+import ConnectionStatus from "./ConnectionStatus";
 import LeftSidebar from "./LeftSidebar";
+import OnlineUsers from "./OnlineUsers";
 import RightSidebar from "./RightSidebar";
 
 const ChatLayout = () => {
@@ -17,8 +20,11 @@ const ChatLayout = () => {
     selectedConversationId,
   } = useChatStore();
 
+  // Initialize socket connection
+
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
+  const [onlineUsersOpen, setOnlineUsersOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -79,6 +85,9 @@ const ChatLayout = () => {
 
       {/* Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
+        {/* Connection Status */}
+        <ConnectionStatus />
+
         <ChatArea
           onToggleRightSidebar={() => setRightSidebarOpen(!rightSidebarOpen)}
         />
@@ -104,6 +113,30 @@ const ChatLayout = () => {
           onClick={() => setRightSidebarOpen(false)}
         />
       )}
+
+      {/* Online Users Panel */}
+      <div
+        className={`
+        fixed lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out
+        ${onlineUsersOpen ? "translate-x-0" : "translate-x-full"}
+        w-64 h-full bg-base-100 border-l border-base-300 z-40
+        lg:flex lg:flex-col
+        right-0
+      `}
+      >
+        <OnlineUsers />
+      </div>
+
+      {/* Online Users Mobile Overlay */}
+      {onlineUsersOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setOnlineUsersOpen(false)}
+        />
+      )}
+
+      {/* Debug Component (Development Only) */}
+      {process.env.NODE_ENV === "development" && <SocketDebug />}
     </div>
   );
 };
