@@ -52,7 +52,7 @@ const ChatLayout = () => {
   }
 
   return (
-    <div className="h-screen bg-base-200 flex overflow-hidden">
+    <div className="h-screen w-screen bg-base-200 flex overflow-hidden">
       {/* Mobile Menu Button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
@@ -68,7 +68,7 @@ const ChatLayout = () => {
         className={`
         fixed lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out
         ${leftSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        w-80 h-full bg-base-100 border-r border-base-300 z-40
+        w-80 max-w-[85vw] h-full bg-base-100 border-r border-base-300 z-40
         lg:flex lg:flex-col overflow-hidden
       `}
       >
