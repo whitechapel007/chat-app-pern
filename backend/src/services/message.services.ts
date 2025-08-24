@@ -33,15 +33,26 @@ export const getOrCreateDirectConversation = async (
 ) => {
   // Use a transaction to handle race conditions
   return await prisma.$transaction(async (tx) => {
-    // First, try to find existing conversation
+    // Find existing direct conversation between these two users
     const existingConversation = await tx.conversation.findFirst({
       where: {
         type: "DIRECT",
-        participants: {
-          some: {
-            userId: user1Id,
+        AND: [
+          {
+            participants: {
+              some: {
+                userId: user1Id,
+              },
+            },
           },
-        },
+          {
+            participants: {
+              some: {
+                userId: user2Id,
+              },
+            },
+          },
+        ],
       },
       include: {
         participants: {
@@ -52,6 +63,7 @@ export const getOrCreateDirectConversation = async (
                 username: true,
                 fullName: true,
                 profilePic: true,
+                isOnline: true,
               },
             },
           },
@@ -59,11 +71,12 @@ export const getOrCreateDirectConversation = async (
       },
     });
 
-    // Check if this conversation has exactly these two users
+    // Verify this is exactly a conversation between these two users
     if (existingConversation) {
-      const participantIds = existingConversation.participants.map(
-        (p) => p.userId
-      );
+      const participantIds = existingConversation.participants
+        .filter((p) => !p.leftAt) // Only active participants
+        .map((p) => p.userId);
+
       if (
         participantIds.length === 2 &&
         participantIds.includes(user1Id) &&
@@ -105,11 +118,22 @@ export const getOrCreateDirectConversation = async (
         const retryConversation = await tx.conversation.findFirst({
           where: {
             type: "DIRECT",
-            participants: {
-              some: {
-                userId: user1Id,
+            AND: [
+              {
+                participants: {
+                  some: {
+                    userId: user1Id,
+                  },
+                },
               },
-            },
+              {
+                participants: {
+                  some: {
+                    userId: user2Id,
+                  },
+                },
+              },
+            ],
           },
           include: {
             participants: {
@@ -120,6 +144,7 @@ export const getOrCreateDirectConversation = async (
                     username: true,
                     fullName: true,
                     profilePic: true,
+                    isOnline: true,
                   },
                 },
               },
@@ -128,9 +153,10 @@ export const getOrCreateDirectConversation = async (
         });
 
         if (retryConversation) {
-          const participantIds = retryConversation.participants.map(
-            (p) => p.userId
-          );
+          const participantIds = retryConversation.participants
+            .filter((p) => !p.leftAt) // Only active participants
+            .map((p) => p.userId);
+
           if (
             participantIds.length === 2 &&
             participantIds.includes(user1Id) &&
@@ -612,7 +638,14 @@ export const sendDirectMessage = async (
   );
 
   // Send message to that conversation
-  return sendMessage(senderId, conversation.id, data);
+  const message = await sendMessage(senderId, conversation.id, data);
+
+  // Return both message and conversation info
+  return {
+    message,
+    conversationId: conversation.id,
+    conversation,
+  };
 };
 
 // Get messages from a conversation
@@ -772,11 +805,15 @@ export const getUserConversations = async (userId: string) => {
       participants: {
         some: {
           userId: userId,
+          leftAt: null, // Only include conversations the user hasn't left
         },
       },
     },
     include: {
       participants: {
+        where: {
+          leftAt: null, // Only include active participants
+        },
         include: {
           user: {
             select: {
@@ -790,7 +827,7 @@ export const getUserConversations = async (userId: string) => {
         },
       },
       messages: {
-        take: 100,
+        take: 1, // Only get the latest message for preview
         orderBy: {
           createdAt: "desc",
         },

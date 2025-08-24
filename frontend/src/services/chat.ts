@@ -11,7 +11,7 @@ export const chatAPI = {
   // Get all conversations for the authenticated user
   getConversations: async (): Promise<Conversation[]> => {
     const response = await apiClient.get("/messages/conversations");
-    return response.data;
+    return response.data.data;
   },
 
   // Get messages for a specific conversation
@@ -23,7 +23,7 @@ export const chatAPI = {
       before?: string;
       after?: string;
     }
-  ): Promise<Message[]> => {
+  ): Promise<{ messages: Message[] }> => {
     const params = new URLSearchParams();
     if (options?.page) params.append("page", options.page.toString());
     if (options?.limit) params.append("limit", options.limit.toString());
@@ -33,7 +33,7 @@ export const chatAPI = {
     const response = await apiClient.get(
       `/messages/conversations/${conversationId}/messages?${params.toString()}`
     );
-    return response.data;
+    return response.data.data;
   },
 
   // Send a message to a conversation
@@ -45,14 +45,18 @@ export const chatAPI = {
       `/messages/conversations/${conversationId}/messages`,
       data
     );
-    return response.data;
+    return response.data.data;
   },
 
   // Send a direct message to a user (creates conversation if needed)
   sendDirectMessage: async (
     userId: string,
     data: SendMessageData
-  ): Promise<{ message: Message; conversation: Conversation }> => {
+  ): Promise<{
+    message: Message;
+    conversationId: string;
+    conversation: Conversation;
+  }> => {
     const response = await apiClient.post(
       `/messages/users/${userId}/messages`,
       data
@@ -64,8 +68,8 @@ export const chatAPI = {
   createGroupConversation: async (
     data: CreateConversationData
   ): Promise<Conversation> => {
-    const response = await apiClient.post("/messages/conversations", data);
-    return response.data;
+    const response = await apiClient.post("/messages/groups", data);
+    return response.data.data;
   },
 
   // Update a message
@@ -74,7 +78,7 @@ export const chatAPI = {
     data: { content: string }
   ): Promise<Message> => {
     const response = await apiClient.put(`/messages/${messageId}`, data);
-    return response.data;
+    return response.data.data;
   },
 
   // Delete a message
@@ -114,7 +118,7 @@ export const chatAPI = {
         },
       }
     );
-    return response.data;
+    return response.data.data;
   },
 
   // Upload image to user (direct message)
@@ -131,6 +135,37 @@ export const chatAPI = {
         },
       }
     );
-    return response.data;
+    return response.data.data;
+  },
+
+  // Group management functions
+  addParticipantToGroup: async (
+    conversationId: string,
+    userId: string
+  ): Promise<void> => {
+    await apiClient.post(
+      `/messages/conversations/${conversationId}/participants`,
+      { userId }
+    );
+  },
+
+  removeParticipantFromGroup: async (
+    conversationId: string,
+    userId: string
+  ): Promise<void> => {
+    await apiClient.delete(
+      `/messages/conversations/${conversationId}/participants/${userId}`
+    );
+  },
+
+  updateGroupConversation: async (
+    conversationId: string,
+    data: { name?: string; description?: string }
+  ): Promise<Conversation> => {
+    const response = await apiClient.put(
+      `/messages/conversations/${conversationId}`,
+      data
+    );
+    return response.data.data;
   },
 };

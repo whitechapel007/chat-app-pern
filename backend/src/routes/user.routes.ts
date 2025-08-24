@@ -1,5 +1,9 @@
 import { Router } from "express";
 import {
+  getConversations,
+  getMessages,
+} from "../controllers/message.controller";
+import {
   getAllUsers,
   getCurrentUser,
   getUserById,
@@ -10,10 +14,6 @@ import {
   updateCurrentUserProfile,
   updateOnlineStatus,
 } from "../controllers/user.controller";
-import {
-  getConversations,
-  getMessages,
-} from "../controllers/message.controller";
 import { authenticateToken } from "../middleware/auth.middleware";
 import {
   requireJSON,
@@ -23,6 +23,10 @@ import {
   validateQuery,
 } from "../middleware/validation.middleware";
 import {
+  conversationIdParamSchema,
+  messageQuerySchema,
+} from "../validators/message.validator";
+import {
   onlineStatusSchema,
   paginationQuerySchema,
   searchQuerySchema,
@@ -30,7 +34,6 @@ import {
   userIdParamSchema,
   usernameParamSchema,
 } from "../validators/user.validator";
-import { conversationIdParamSchema } from "../validators/message.validator";
 
 const router = Router();
 
@@ -67,6 +70,7 @@ router.get("/conversations", getConversations);
 router.get(
   "/conversations/:conversationId/messages",
   validateParams(conversationIdParamSchema),
+  validateQuery(messageQuerySchema),
   getMessages
 );
 

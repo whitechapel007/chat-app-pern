@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-interface JWTPayload {
+export interface JWTPayload {
   id: string;
   iat: number;
   exp: number;

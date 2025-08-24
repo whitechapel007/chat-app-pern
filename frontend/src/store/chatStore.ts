@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import { chatAPI } from "../services/chat";
-import type { ChatState, Message, SendMessageData } from "../types/chat";
+import type {
+  ChatState,
+  Conversation,
+  CreateConversationData,
+  Message,
+  SendMessageData,
+} from "../types/chat";
 
 interface ChatActions {
   // Conversations
@@ -16,6 +22,15 @@ interface ChatActions {
   // Users
   loadOnlineUsers: () => Promise<void>;
   selectUser: (userId: string | null) => void;
+
+  // Group chats
+  createGroupConversation: (
+    data: CreateConversationData
+  ) => Promise<Conversation>;
+
+  // File uploads
+  uploadImage: (conversationId: string, file: File) => Promise<void>;
+  uploadImageToUser: (userId: string, file: File) => Promise<void>;
 
   // UI State
   setSearchQuery: (query: string) => void;
@@ -53,99 +68,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       set({ conversations, isLoading: false });
     } catch (error) {
       console.error("Failed to load conversations:", error);
-
-      // For demo purposes, add some mock conversations
-      const mockConversations = [
-        {
-          id: "1",
-          type: "DIRECT" as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          participants: [
-            {
-              id: "p1",
-              conversationId: "1",
-              userId: "user1",
-              role: "MEMBER" as const,
-              joinedAt: new Date().toISOString(),
-              user: {
-                id: "user1",
-                fullName: "Dina Harrison",
-                username: "dina_harrison",
-                email: "dina@example.com",
-                isOnline: true,
-              },
-            },
-          ],
-          lastMessage: {
-            id: "m1",
-            content: "Hey Travis, would U like to drink some coffe with me?",
-            type: "TEXT" as const,
-            senderId: "user1",
-            conversationId: "1",
-            createdAt: new Date(Date.now() - 300000).toISOString(),
-            sender: {
-              id: "user1",
-              fullName: "Dina Harrison",
-              username: "dina_harrison",
-            },
-          },
-        },
-        {
-          id: "2",
-          type: "DIRECT" as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          participants: [
-            {
-              id: "p2",
-              conversationId: "2",
-              userId: "user2",
-              role: "MEMBER" as const,
-              joinedAt: new Date().toISOString(),
-              user: {
-                id: "user2",
-                fullName: "John Shinoda",
-                username: "john_shinoda",
-                email: "john@example.com",
-                isOnline: false,
-              },
-            },
-          ],
-          lastMessage: {
-            id: "m2",
-            content: "Hey man, how R U???",
-            type: "TEXT" as const,
-            senderId: "user2",
-            conversationId: "2",
-            createdAt: new Date(Date.now() - 600000).toISOString(),
-            sender: {
-              id: "user2",
-              fullName: "John Shinoda",
-              username: "john_shinoda",
-            },
-          },
-        },
-      ];
-
-      set({
-        conversations: mockConversations,
-        onlineUsers: [
-          {
-            id: "user1",
-            fullName: "Dina Harrison",
-            username: "dina_harrison",
-            isOnline: true,
-          },
-          {
-            id: "user3",
-            fullName: "Sam Pettersen",
-            username: "sam_pettersen",
-            isOnline: true,
-          },
-        ],
-        isLoading: false,
-      });
     }
   },
 
@@ -159,99 +81,19 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   loadMessages: async (conversationId) => {
     set({ isLoadingMessages: true, error: null });
     try {
-      const messages = await chatAPI.getMessages(conversationId, { limit: 50 });
+      const { messages } = await chatAPI.getMessages(conversationId, {
+        limit: 50,
+      });
+
       set((state) => ({
         messages: {
           ...state.messages,
-          [conversationId]: messages.reverse(), // Reverse to show oldest first
+          [conversationId]: messages, // Reverse to show oldest first
         },
         isLoadingMessages: false,
       }));
     } catch (error) {
       console.error("Failed to load messages:", error);
-
-      // For demo purposes, add some mock messages
-      const mockMessages =
-        conversationId === "1"
-          ? [
-              {
-                id: "m1",
-                content:
-                  "Hey Travis, would U like to drink some coffe with me?",
-                type: "TEXT" as const,
-                senderId: "user1",
-                conversationId: "1",
-                createdAt: new Date(Date.now() - 300000).toISOString(),
-                sender: {
-                  id: "user1",
-                  fullName: "Dina Harrison",
-                  username: "dina_harrison",
-                },
-              },
-              {
-                id: "m3",
-                content: "Sure! At 11:00 am?",
-                type: "TEXT" as const,
-                senderId: "current-user",
-                conversationId: "1",
-                createdAt: new Date(Date.now() - 240000).toISOString(),
-                sender: {
-                  id: "current-user",
-                  fullName: "Travis Taylor",
-                  username: "travis_taylor",
-                },
-              },
-              {
-                id: "m4",
-                content:
-                  "Yay! I have a tons stories about that man.. Ok, have a nice evening, see ya!",
-                type: "TEXT" as const,
-                senderId: "user1",
-                conversationId: "1",
-                createdAt: new Date(Date.now() - 180000).toISOString(),
-                sender: {
-                  id: "user1",
-                  fullName: "Dina Harrison",
-                  username: "dina_harrison",
-                },
-              },
-              {
-                id: "m5",
-                content: "See ya 😊",
-                type: "TEXT" as const,
-                senderId: "current-user",
-                conversationId: "1",
-                createdAt: new Date(Date.now() - 120000).toISOString(),
-                sender: {
-                  id: "current-user",
-                  fullName: "Travis Taylor",
-                  username: "travis_taylor",
-                },
-              },
-            ]
-          : [
-              {
-                id: "m2",
-                content: "Hey man, how R U???",
-                type: "TEXT" as const,
-                senderId: "user2",
-                conversationId: "2",
-                createdAt: new Date(Date.now() - 600000).toISOString(),
-                sender: {
-                  id: "user2",
-                  fullName: "John Shinoda",
-                  username: "john_shinoda",
-                },
-              },
-            ];
-
-      set((state) => ({
-        messages: {
-          ...state.messages,
-          [conversationId]: mockMessages,
-        },
-        isLoadingMessages: false,
-      }));
     }
   },
 
@@ -299,7 +141,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     set({ isSendingMessage: true, error: null });
     try {
       const result = await chatAPI.sendDirectMessage(userId, data);
-      const { message, conversation } = result;
+      const { message, conversationId, conversation } = result;
 
       // Add or update conversation
       set((state) => {
@@ -309,19 +151,25 @@ export const useChatStore = create<ChatStore>((set, get) => ({
           : [];
 
         const existingConvIndex = conversations.findIndex(
-          (conv) => conv.id === conversation.id
+          (conv) => conv.id === conversationId
         );
 
         let updatedConversations;
         if (existingConvIndex >= 0) {
+          // Update existing conversation
           updatedConversations = conversations.map((conv, index) =>
             index === existingConvIndex
-              ? { ...conv, lastMessage: message }
+              ? {
+                  ...conv,
+                  messages: [...conv.messages, message],
+                  updatedAt: message.createdAt,
+                }
               : conv
           );
         } else {
+          // Add new conversation to the list
           updatedConversations = [
-            { ...conversation, lastMessage: message },
+            { ...conversation, messages: [message] },
             ...conversations,
           ];
         }
@@ -330,12 +178,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
           conversations: updatedConversations,
           messages: {
             ...state.messages,
-            [conversation.id]: [
-              ...(state.messages[conversation.id] || []),
+            [conversationId]: [
+              ...(state.messages[conversationId] || []),
               message,
             ],
           },
-          selectedConversationId: conversation.id,
+          selectedConversationId: conversationId,
           isSendingMessage: false,
         };
       });
@@ -383,6 +231,91 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   clearError: () => {
     set({ error: null });
+  },
+
+  // File upload actions
+  uploadImage: async (conversationId, file) => {
+    set({ isSendingMessage: true, error: null });
+    try {
+      const message = await chatAPI.uploadImage(conversationId, file);
+
+      // Add the message to the store
+      set((state) => ({
+        messages: {
+          ...state.messages,
+          [conversationId]: [
+            ...(state.messages[conversationId] || []),
+            message,
+          ],
+        },
+        isSendingMessage: false,
+      }));
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+      set({
+        error: "Failed to upload image",
+        isSendingMessage: false,
+      });
+      throw error;
+    }
+  },
+
+  uploadImageToUser: async (userId, file) => {
+    set({ isSendingMessage: true, error: null });
+    try {
+      const message = await chatAPI.uploadImageToUser(userId, file);
+
+      // Add the message to the store
+      set((state) => ({
+        messages: {
+          ...state.messages,
+          [message.conversationId]: [
+            ...(state.messages[message.conversationId] || []),
+            message,
+          ],
+        },
+        selectedConversationId: message.conversationId,
+        isSendingMessage: false,
+      }));
+
+      // Reload conversations to get the updated conversation
+      get().loadConversations();
+    } catch (error) {
+      console.error("Failed to upload image to user:", error);
+      set({
+        error: "Failed to upload image",
+        isSendingMessage: false,
+      });
+      throw error;
+    }
+  },
+
+  // Group chat actions
+  createGroupConversation: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      const conversation = await chatAPI.createGroupConversation(data);
+
+      const conversations = await chatAPI.getConversations();
+
+      set(() => ({
+        conversations: [...conversations],
+        selectedConversationId: conversation.id,
+        isLoading: false,
+      }));
+
+      // Load messages for the new conversation
+      get().loadMessages(conversation.id);
+
+      return conversation;
+    } catch (error) {
+      console.error("Failed to create group conversation:", error);
+      set({
+        error: "Failed to create group chat",
+        isLoading: false,
+      });
+      throw error;
+    }
   },
 
   reset: () => {

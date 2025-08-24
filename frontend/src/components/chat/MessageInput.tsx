@@ -1,27 +1,28 @@
-import React, { useState, useRef } from "react";
+import { Paperclip, Send, Smile } from "lucide-react";
+import { useRef, useState } from "react";
 import { useChatStore } from "../../store/chatStore";
-import { Send, Paperclip, Smile } from "lucide-react";
+import EmojiPicker from "./EmojiPicker";
+import FileUploadModal from "./FileUploadModal";
 
-const MessageInput: React.FC = () => {
-  const { 
-    selectedConversationId, 
-    sendMessage, 
-    isSendingMessage 
-  } = useChatStore();
-  
+const MessageInput = () => {
+  const { selectedConversationId, sendMessage, isSendingMessage, uploadImage } =
+    useChatStore();
+
   const [message, setMessage] = useState("");
+  const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!message.trim() || !selectedConversationId || isSendingMessage) {
       return;
     }
 
     const messageContent = message.trim();
     setMessage("");
-    
+
     // Reset textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -30,7 +31,7 @@ const MessageInput: React.FC = () => {
     try {
       await sendMessage(selectedConversationId, {
         content: messageContent,
-        type: "TEXT"
+        type: "TEXT",
       });
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -39,7 +40,7 @@ const MessageInput: React.FC = () => {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
@@ -48,7 +49,7 @@ const MessageInput: React.FC = () => {
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
-    
+
     // Auto-resize textarea
     const textarea = e.target;
     textarea.style.height = "auto";
@@ -56,13 +57,39 @@ const MessageInput: React.FC = () => {
   };
 
   const handleFileUpload = () => {
-    // TODO: Implement file upload
-    console.log("File upload not implemented yet");
+    setIsFileUploadOpen(true);
   };
 
   const handleEmojiClick = () => {
-    // TODO: Implement emoji picker
-    console.log("Emoji picker not implemented yet");
+    setIsEmojiPickerOpen(!isEmojiPickerOpen);
+  };
+
+  const handleFileUploadSubmit = async (file: File) => {
+    if (!selectedConversationId) return;
+
+    try {
+      await uploadImage(selectedConversationId, file);
+    } catch (error) {
+      console.error("Failed to upload file:", error);
+    }
+  };
+
+  const handleEmojiSelect = (emoji: string) => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newMessage = message.slice(0, start) + emoji + message.slice(end);
+      setMessage(newMessage);
+
+      // Set cursor position after emoji
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+        textarea.focus();
+      }, 0);
+    } else {
+      setMessage(message + emoji);
+    }
   };
 
   if (!selectedConversationId) {
@@ -88,13 +115,13 @@ const MessageInput: React.FC = () => {
             ref={textareaRef}
             value={message}
             onChange={handleTextareaChange}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             className="textarea textarea-bordered w-full resize-none min-h-[2.5rem] max-h-[120px] pr-12"
             rows={1}
             disabled={isSendingMessage}
           />
-          
+
           {/* Emoji Button */}
           <button
             type="button"
@@ -111,9 +138,10 @@ const MessageInput: React.FC = () => {
           type="submit"
           className={`
             btn btn-circle flex-shrink-0
-            ${message.trim() && !isSendingMessage 
-              ? 'btn-primary' 
-              : 'btn-disabled'
+            ${
+              message.trim() && !isSendingMessage
+                ? "btn-primary"
+                : "btn-disabled"
             }
           `}
           disabled={!message.trim() || isSendingMessage}
@@ -125,6 +153,24 @@ const MessageInput: React.FC = () => {
           )}
         </button>
       </form>
+
+      {/* File Upload Modal */}
+      <FileUploadModal
+        isOpen={isFileUploadOpen}
+        onClose={() => setIsFileUploadOpen(false)}
+        onUpload={handleFileUploadSubmit}
+        isUploading={isSendingMessage}
+      />
+
+      {/* Emoji Picker */}
+      <div className="relative">
+        <EmojiPicker
+          isOpen={isEmojiPickerOpen}
+          onClose={() => setIsEmojiPickerOpen(false)}
+          onEmojiSelect={handleEmojiSelect}
+          position={{ bottom: 60, right: 20 }}
+        />
+      </div>
     </div>
   );
 };

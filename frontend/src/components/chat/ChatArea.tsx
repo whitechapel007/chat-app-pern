@@ -1,5 +1,4 @@
 import { Info, Phone, Video } from "lucide-react";
-import React from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useChatStore } from "../../store/chatStore";
 import MessageInput from "./MessageInput";
@@ -9,7 +8,7 @@ interface ChatAreaProps {
   onToggleRightSidebar?: () => void;
 }
 
-const ChatArea: React.FC<ChatAreaProps> = ({ onToggleRightSidebar }) => {
+const ChatArea = ({ onToggleRightSidebar }: ChatAreaProps) => {
   const { user } = useAuthStore();
   const {
     selectedConversationId,
@@ -92,9 +91,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({ onToggleRightSidebar }) => {
   const userIsOnline = isOnline();
 
   return (
-    <div className="flex-1 flex flex-col bg-base-100">
+    <div className="flex-1 flex flex-col bg-base-100 min-h-0">
       {/* Chat Header */}
-      <div className="p-4 border-b border-base-300 bg-base-100">
+      <div className="p-4 border-b border-base-300 bg-base-100 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             {/* Avatar */}
@@ -158,7 +157,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ onToggleRightSidebar }) => {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden min-h-0">
         {isLoadingMessages ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="loading loading-spinner loading-lg"></div>
@@ -169,7 +168,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ onToggleRightSidebar }) => {
       </div>
 
       {/* Message Input */}
-      <div className="border-t border-base-300 bg-base-100">
+      <div className="border-t border-base-300 bg-base-100 flex-shrink-0">
         <MessageInput />
       </div>
     </div>

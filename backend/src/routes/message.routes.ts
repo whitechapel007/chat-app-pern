@@ -1,33 +1,35 @@
 import { Router } from "express";
 import {
+  addParticipantToGroup,
+  createGroupConversation,
   deleteMessage,
   getConversations,
   getMessages,
+  removeParticipantFromGroup,
   sendDirectMessage,
   sendImageMessage,
   sendImageToConversation,
   sendMessage,
-  updateMessage,
-  createGroupConversation,
-  addParticipantToGroup,
-  removeParticipantFromGroup,
   updateGroupConversation,
+  updateMessage,
 } from "../controllers/message.controller";
 import { authenticateToken } from "../middleware/auth.middleware";
 import {
-  uploadImage,
   handleUploadError,
+  uploadImage,
 } from "../middleware/upload.middleware";
 import {
   requireJSON,
   sanitizeBody,
   validateBody,
   validateParams,
+  validateQuery,
 } from "../middleware/validation.middleware";
 import {
   conversationIdParamSchema,
   conversationParticipantParamSchema,
   groupConversationSchema,
+  messageQuerySchema,
   messageSchema,
 } from "../validators/message.validator";
 
@@ -79,6 +81,7 @@ router.post(
 router.get(
   "/conversations/:conversationId/messages",
   validateParams(conversationIdParamSchema),
+  validateQuery(messageQuerySchema),
   getMessages
 );
 

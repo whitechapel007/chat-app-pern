@@ -102,7 +102,7 @@ const LeftSidebar = ({ onClose }: LeftSidebarProps) => {
 
       {/* Online Friends */}
       {onlineUsers.length > 0 && (
-        <div className="p-4 border-b border-base-300">
+        <div className="p-4 border-b border-base-300 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-semibold text-sm text-base-content/70 flex items-center">
               <Users size={16} className="mr-2" />
@@ -112,13 +112,15 @@ const LeftSidebar = ({ onClose }: LeftSidebarProps) => {
               {onlineUsers.length}
             </span>
           </div>
-          <OnlineUsersList />
+          <div className="max-h-20 overflow-hidden">
+            <OnlineUsersList />
+          </div>
         </div>
       )}
 
       {/* Conversations */}
-      <div className="flex-1 overflow-hidden">
-        <div className="p-4 pb-2">
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="p-4 pb-2 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-sm text-base-content/70 flex items-center">
               <MessageCircle size={16} className="mr-2" />
@@ -133,7 +135,7 @@ const LeftSidebar = ({ onClose }: LeftSidebarProps) => {
             </button>
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-0">
           <ConversationList onConversationSelect={onClose} />
         </div>
       </div>

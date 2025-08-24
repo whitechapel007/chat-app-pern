@@ -1,4 +1,3 @@
-
 import { useAuthStore } from "../../store/authStore";
 import { useChatStore } from "../../store/chatStore";
 import type { Conversation } from "../../types/chat";
@@ -70,9 +69,9 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
   };
 
   const getLastMessagePreview = (conversation: Conversation) => {
-    if (!conversation.lastMessage) return "No messages yet";
+    if (!conversation.messages[0]) return "No messages yet";
 
-    const { content, type, senderId } = conversation.lastMessage;
+    const { content, type, senderId } = conversation.messages[0];
     const isFromMe = senderId === user?.id;
     const prefix = isFromMe ? "You: " : "";
 
@@ -93,7 +92,7 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
     if (!searchQuery) return true;
 
     const name = getConversationName(conversation).toLowerCase();
-    const lastMessage = conversation.lastMessage?.content?.toLowerCase() || "";
+    const lastMessage = conversation.messages[0]?.content?.toLowerCase() || "";
     const query = searchQuery.toLowerCase();
 
     return name.includes(query) || lastMessage.includes(query);
@@ -113,7 +112,7 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
   }
 
   return (
-    <div className="space-y-1 px-2">
+    <div className="space-y-1 px-2 pb-4">
       {filteredConversations.map((conversation) => {
         const isSelected = conversation.id === selectedConversationId;
         const conversationName = getConversationName(conversation);
@@ -135,7 +134,7 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
           >
             <div className="flex items-center space-x-3">
               {/* Avatar */}
-              <div className="relative">
+              <div className="relative flex-shrink-0">
                 <div className="avatar">
                   <div className="w-12 h-12 rounded-full bg-base-300 flex items-center justify-center">
                     {avatarUrl ? (
@@ -162,10 +161,10 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold truncate">{conversationName}</h3>
-                  {conversation.lastMessage && (
+                  {conversation.messages[0] && (
                     <span
                       className={`
-                      text-xs
+                      text-xs flex-shrink-0 ml-2
                       ${
                         isSelected
                           ? "text-primary-content/70"
@@ -174,7 +173,7 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
                     `}
                     >
                       {formatLastMessageTime(
-                        conversation.lastMessage.createdAt
+                        conversation.messages[0].createdAt
                       )}
                     </span>
                   )}
@@ -195,7 +194,7 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
 
               {/* Unread indicator */}
               {conversation.unreadCount && conversation.unreadCount > 0 && (
-                <div className="badge badge-error badge-sm">
+                <div className="badge badge-error badge-sm flex-shrink-0">
                   {conversation.unreadCount > 99
                     ? "99+"
                     : conversation.unreadCount}

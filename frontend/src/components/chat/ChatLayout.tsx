@@ -1,20 +1,20 @@
-import  { useEffect, useState } from "react";
-import { useChatStore } from "../../store/chatStore";
-import { useAuthStore } from "../../store/authStore";
-import LeftSidebar from "./LeftSidebar";
-import ChatArea from "./ChatArea";
-import RightSidebar from "./RightSidebar";
-import LoadingSpinner from "../ui/LoadingSpinner";
 import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useAuthStore } from "../../store/authStore";
+import { useChatStore } from "../../store/chatStore";
+import LoadingSpinner from "../ui/LoadingSpinner";
+import ChatArea from "./ChatArea";
+import LeftSidebar from "./LeftSidebar";
+import RightSidebar from "./RightSidebar";
 
-const ChatLayout= () => {
+const ChatLayout = () => {
   const { user } = useAuthStore();
   const {
     loadConversations,
     loadOnlineUsers,
     isLoading,
     error,
-    selectedConversationId
+    selectedConversationId,
   } = useChatStore();
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
@@ -58,12 +58,14 @@ const ChatLayout= () => {
       </div>
 
       {/* Left Sidebar */}
-      <div className={`
+      <div
+        className={`
         fixed lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out
-        ${leftSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        ${leftSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         w-80 h-full bg-base-100 border-r border-base-300 z-40
-        lg:flex lg:flex-col
-      `}>
+        lg:flex lg:flex-col overflow-hidden
+      `}
+      >
         <LeftSidebar onClose={() => setLeftSidebarOpen(false)} />
       </div>
 
@@ -83,13 +85,15 @@ const ChatLayout= () => {
       </div>
 
       {/* Right Sidebar */}
-      <div className={`
+      <div
+        className={`
         fixed lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out
-        ${rightSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
+        ${rightSidebarOpen ? "translate-x-0" : "translate-x-full"}
         w-80 h-full bg-base-100 border-l border-base-300 z-40
-        ${selectedConversationId ? 'lg:flex lg:flex-col' : 'hidden'}
+        ${selectedConversationId ? "lg:flex lg:flex-col" : "hidden"}
         right-0
-      `}>
+      `}
+      >
         <RightSidebar onClose={() => setRightSidebarOpen(false)} />
       </div>
 

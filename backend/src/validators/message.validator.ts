@@ -77,6 +77,39 @@ export const conversationParticipantParamSchema = Joi.object({
   }),
 });
 
+// Schema for message query parameters (pagination and filtering)
+export const messageQuerySchema = Joi.object({
+  page: Joi.string()
+    .pattern(/^\d+$/)
+    .default("1")
+    .messages({
+      "string.pattern.base": "Page must be a valid number",
+    })
+    .optional(),
+
+  limit: Joi.string()
+    .pattern(/^\d+$/)
+    .default("20")
+    .messages({
+      "string.pattern.base": "Limit must be a valid number",
+    })
+    .optional(),
+
+  before: Joi.string()
+    .isoDate()
+    .messages({
+      "string.isoDate": "Before must be a valid ISO date string",
+    })
+    .optional(),
+
+  after: Joi.string()
+    .isoDate()
+    .messages({
+      "string.isoDate": "After must be a valid ISO date string",
+    })
+    .optional(),
+});
+
 // Validation helper function
 export const validateInput = <T>(
   schema: Joi.ObjectSchema,

@@ -203,7 +203,18 @@ export const getMessages = asyncHandler(
     const { conversationId } = req.params as {
       conversationId: string;
     }; // ✅ Access req.params
-    const queryOptions = req.query; // ✅ Access req.query
+
+    // Parse query parameters with proper type conversion
+    const { page, limit, before, after } = req.query;
+    const parsedPage = page ? parseInt(page as string) : 1;
+    const parsedLimit = limit ? parseInt(limit as string) : 20;
+
+    const queryOptions = {
+      page: isNaN(parsedPage) ? 1 : parsedPage,
+      limit: isNaN(parsedLimit) ? 20 : parsedLimit,
+      before: before as string,
+      after: after as string,
+    };
 
     // Call service layer with extracted data
     const result = await messageService.getMessages(

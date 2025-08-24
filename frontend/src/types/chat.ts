@@ -21,7 +21,7 @@ export interface Conversation {
   description?: string;
   createdAt: string;
   updatedAt: string;
-  lastMessage?: Message;
+  messages: Message[];
   participants: ConversationParticipant[];
   unreadCount?: number;
 }
