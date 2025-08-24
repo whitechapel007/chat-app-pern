@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-import AuthDebug from "./components/debug/AuthDebug";
 import { useAuthInit } from "./hooks/useAuthInit";
 import { queryClient } from "./lib/queryClient";
 import HomePage from "./pages/HomePage";
@@ -55,7 +54,7 @@ function AppContent() {
       </Routes>
 
       {/* Debug component for development */}
-      <AuthDebug />
+      {/* <AuthDebug /> */}
     </div>
   );
 }
