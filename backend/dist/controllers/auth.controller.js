@@ -1,6 +1,6 @@
-import { asyncHandler } from "../middleware/error.middleware";
-import * as authService from "../services/auth.services";
-import { formatSuccessResponse } from "../utils/errors";
+import { asyncHandler } from "../middleware/error.middleware.js";
+import * as authService from "../services/auth.services.js";
+import { formatSuccessResponse } from "../utils/errors.js";
 export const signup = asyncHandler(async (req, res, next) => {
     const result = await authService.signup(req.body);
     // Set HTTP-only cookie for token (more secure than localStorage)

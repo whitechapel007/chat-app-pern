@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   getConversations,
   getMessages,
-} from "../controllers/message.controller";
+} from "../controllers/message.controller.js";
 import {
   getAllUsers,
   getCurrentUser,
@@ -10,26 +10,23 @@ import {
   getUserByUsername,
   getUserStats,
   getUsersForConversation,
+  getUsersOnline,
   searchUsers,
   updateCurrentUserProfile,
   updateOnlineStatus,
-  getUsersOnline
-} from "../controllers/user.controller";
-import { authenticateToken } from "../middleware/auth.middleware";
+} from "../controllers/user.controller.js";
+import { authenticateToken } from "../middleware/auth.middleware.js";
 import {
   requireJSON,
   sanitizeBody,
   validateBody,
   validateParams,
   validateQuery,
-} from "../middleware/validation.middleware";
-import { getOnlineUsers, isUserOnline, getUserSocketId } from "../socket";
-import type{ Request, Response } from "express";
-
+} from "../middleware/validation.middleware.js";
 import {
   conversationIdParamSchema,
   messageQuerySchema,
-} from "../validators/message.validator";
+} from "../validators/message.validator.js";
 import {
   onlineStatusSchema,
   paginationQuerySchema,
@@ -37,7 +34,7 @@ import {
   updateUserProfileSchema,
   userIdParamSchema,
   usernameParamSchema,
-} from "../validators/user.validator";
+} from "../validators/user.validator.js";
 
 const router = Router();
 
@@ -68,7 +65,7 @@ router.patch(
 router.get("/me/stats", getUserStats);
 
 // Get online users and socket mapping info
-router.get("/online", getOnlineUsers);
+router.get("/online", getUsersOnline);
 
 // Get current user's conversations
 router.get("/conversations", getConversations);

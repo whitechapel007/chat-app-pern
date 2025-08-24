@@ -1,7 +1,7 @@
-import { asyncHandler } from "../middleware/error.middleware";
-import * as messageService from "../services/message.services";
-import { formatSuccessResponse } from "../utils/errors";
-import { sendToUser, sendToUsers, isUserOnline } from "../socket";
+import { asyncHandler } from "../middleware/error.middleware.js";
+import * as messageService from "../services/message.services.js";
+import { isUserOnline, sendToUser, sendToUsers } from "../socket/index.js";
+import { formatSuccessResponse } from "../utils/errors.js";
 // Get all conversations for a user
 export const getConversations = asyncHandler(async (req, res, next) => {
     if (!req.user) {

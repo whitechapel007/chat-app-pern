@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import type { NextFunction, Request, Response } from "express";
-import { AppError, formatErrorResponse } from "../utils/errors";
+import { AppError, formatErrorResponse } from "../utils/errors.js";
 
 // Global error handling middleware
 export const errorHandler = (

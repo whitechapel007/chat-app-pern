@@ -1,9 +1,9 @@
 // services/auth.service.ts
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { prisma } from "../lib/prisma";
-import { AuthenticationError, ConflictError, NotFoundError, ValidationError, } from "../utils/errors";
-import { changePasswordSchema, signinSchema, signupSchema, validateInput, } from "../validators/auth.validator";
+import { prisma } from "../lib/prisma.js";
+import { AuthenticationError, ConflictError, NotFoundError, ValidationError, } from "../utils/errors.js";
+import { changePasswordSchema, signinSchema, signupSchema, validateInput, } from "../validators/auth.validator.js";
 // Generate JWT token
 const generateToken = (userId) => {
     if (!process.env.JWT_SECRET) {

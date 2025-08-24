@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { ValidationError } from "../utils/errors";
+import { ValidationError } from "../utils/errors.js";
 // Generic validation middleware factory
 export const validate = (schema, source = "body") => {
     return (req, res, next) => {

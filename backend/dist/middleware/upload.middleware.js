@@ -1,6 +1,6 @@
 import multer from "multer";
 import path from "path";
-import { ValidationError } from "../utils/errors";
+import { ValidationError } from "../utils/errors.js";
 // Configure storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import { prisma } from "../lib/prisma";
-import { AuthenticationError, AuthorizationError } from "../utils/errors";
+import { prisma } from "../lib/prisma.js";
+import { AuthenticationError, AuthorizationError } from "../utils/errors.js";
 // Middleware to verify JWT token
 export const authenticateToken = async (req, res, next) => {
     try {

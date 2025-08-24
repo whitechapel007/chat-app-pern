@@ -5,19 +5,19 @@ import {
   logout,
   signin,
   signup,
-} from "../controllers/auth.controller";
-import { authenticateToken, rateLimit } from "../middleware/auth.middleware";
+} from "../controllers/auth.controller.js";
+import { authenticateToken, rateLimit } from "../middleware/auth.middleware.js";
 
 import {
   requireJSON,
   sanitizeBody,
   validateBody,
-} from "../middleware/validation.middleware";
+} from "../middleware/validation.middleware.js";
 import {
   changePasswordSchema,
   signinSchema,
   signupSchema,
-} from "../validators/auth.validator";
+} from "../validators/auth.validator.js";
 
 const router = Router();
 

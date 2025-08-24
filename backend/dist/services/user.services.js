@@ -1,7 +1,7 @@
-import { prisma } from "../lib/prisma";
-import { NotFoundError, ValidationError } from "../utils/errors";
-import { validateInput } from "../validators/message.validator";
-import { updateUserProfileSchema } from "../validators/user.validator";
+import { prisma } from "../lib/prisma.js";
+import { NotFoundError, ValidationError } from "../utils/errors.js";
+import { validateInput } from "../validators/message.validator.js";
+import { updateUserProfileSchema } from "../validators/user.validator.js";
 // Get all users with pagination and search
 export const getAllUsers = async (options = {}) => {
     const { page = 1, limit = 20, search, excludeUserId } = options;

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Server, Socket } from "socket.io";
-import { prisma } from "../lib/prisma";
-import type { JWTPayload } from "../middleware/auth.middleware";
+import { prisma } from "../lib/prisma.js";
+import type { JWTPayload } from "../middleware/auth.middleware.js";
 
 // Extend Socket interface to include user data
 declare module "socket.io" {

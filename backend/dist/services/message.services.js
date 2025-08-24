@@ -1,6 +1,6 @@
-import { prisma } from "../lib/prisma";
-import { AuthorizationError, NotFoundError, ValidationError, } from "../utils/errors";
-import { messageSchema, validateInput } from "../validators/message.validator";
+import { prisma } from "../lib/prisma.js";
+import { AuthorizationError, NotFoundError, ValidationError, } from "../utils/errors.js";
+import { messageSchema, validateInput, } from "../validators/message.validator.js";
 // Create or get direct conversation between two users
 export const getOrCreateDirectConversation = async (user1Id, user2Id) => {
     // Use a transaction to handle race conditions

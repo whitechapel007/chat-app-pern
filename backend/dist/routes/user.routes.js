@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { getConversations, getMessages, } from "../controllers/message.controller";
-import { getAllUsers, getCurrentUser, getUserById, getUserByUsername, getUserStats, getUsersForConversation, searchUsers, updateCurrentUserProfile, updateOnlineStatus, getUsersOnline } from "../controllers/user.controller";
-import { authenticateToken } from "../middleware/auth.middleware";
-import { requireJSON, sanitizeBody, validateBody, validateParams, validateQuery, } from "../middleware/validation.middleware";
-import { getOnlineUsers, isUserOnline, getUserSocketId } from "../socket";
-import { conversationIdParamSchema, messageQuerySchema, } from "../validators/message.validator";
-import { onlineStatusSchema, paginationQuerySchema, searchQuerySchema, updateUserProfileSchema, userIdParamSchema, usernameParamSchema, } from "../validators/user.validator";
+import { getConversations, getMessages, } from "../controllers/message.controller.js";
+import { getAllUsers, getCurrentUser, getUserById, getUserByUsername, getUserStats, getUsersForConversation, getUsersOnline, searchUsers, updateCurrentUserProfile, updateOnlineStatus, } from "../controllers/user.controller.js";
+import { authenticateToken } from "../middleware/auth.middleware.js";
+import { requireJSON, sanitizeBody, validateBody, validateParams, validateQuery, } from "../middleware/validation.middleware.js";
+import { conversationIdParamSchema, messageQuerySchema, } from "../validators/message.validator.js";
+import { onlineStatusSchema, paginationQuerySchema, searchQuerySchema, updateUserProfileSchema, userIdParamSchema, usernameParamSchema, } from "../validators/user.validator.js";
 const router = Router();
 // Apply authentication to all routes
 router.use(authenticateToken);
@@ -18,7 +17,7 @@ router.patch("/me/status", requireJSON, validateBody(onlineStatusSchema), update
 // Get current user statistics
 router.get("/me/stats", getUserStats);
 // Get online users and socket mapping info
-router.get("/online", getOnlineUsers);
+router.get("/online", getUsersOnline);
 // Get current user's conversations
 router.get("/conversations", getConversations);
 // Get messages from a conversation

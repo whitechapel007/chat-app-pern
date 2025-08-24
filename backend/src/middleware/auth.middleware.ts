@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { prisma } from "../lib/prisma";
-import { AuthenticationError, AuthorizationError } from "../utils/errors";
+import { prisma } from "../lib/prisma.js";
+import { AuthenticationError, AuthorizationError } from "../utils/errors.js";
 
 // Extend Request interface to include user
 declare global {

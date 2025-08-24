@@ -57,7 +57,7 @@ app.use(cookieParser());
 app.use("/uploads", express.static("uploads"));
 
 // Serve static files from frontend build
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
 // Global rate limiting
 app.use(rateLimit(1200, 9 * 60 * 1000));
@@ -80,7 +80,7 @@ app.use("/api/users", userRoutes);
 
 // 3. Catch-all handler for React Router (must come AFTER API routes)
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../frontend/dist", "index.html"));
+  res.sendFile(path.resolve(__dirname, "../../frontend/dist", "index.html"));
 });
 
 // 404 handler for undefined routes

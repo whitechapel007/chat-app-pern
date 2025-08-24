@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { addParticipantToGroup, createGroupConversation, deleteMessage, getConversations, getMessages, removeParticipantFromGroup, sendDirectMessage, sendImageMessage, sendImageToConversation, sendMessage, updateGroupConversation, updateMessage, } from "../controllers/message.controller";
-import { authenticateToken } from "../middleware/auth.middleware";
-import { handleUploadError, uploadImage, } from "../middleware/upload.middleware";
-import { requireJSON, sanitizeBody, validateBody, validateParams, validateQuery, } from "../middleware/validation.middleware";
-import { conversationIdParamSchema, conversationParticipantParamSchema, groupConversationSchema, messageQuerySchema, messageSchema, } from "../validators/message.validator";
+import { addParticipantToGroup, createGroupConversation, deleteMessage, getConversations, getMessages, removeParticipantFromGroup, sendDirectMessage, sendImageMessage, sendImageToConversation, sendMessage, updateGroupConversation, updateMessage, } from "../controllers/message.controller.js";
+import { authenticateToken } from "../middleware/auth.middleware.js";
+import { handleUploadError, uploadImage, } from "../middleware/upload.middleware.js";
+import { requireJSON, sanitizeBody, validateBody, validateParams, validateQuery, } from "../middleware/validation.middleware.js";
+import { conversationIdParamSchema, conversationParticipantParamSchema, groupConversationSchema, messageQuerySchema, messageSchema, } from "../validators/message.validator.js";
 const router = Router();
 // All routes require authentication
 router.use(authenticateToken);

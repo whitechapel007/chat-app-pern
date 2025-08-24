@@ -12,26 +12,26 @@ import {
   sendMessage,
   updateGroupConversation,
   updateMessage,
-} from "../controllers/message.controller";
-import { authenticateToken } from "../middleware/auth.middleware";
+} from "../controllers/message.controller.js";
+import { authenticateToken } from "../middleware/auth.middleware.js";
 import {
   handleUploadError,
   uploadImage,
-} from "../middleware/upload.middleware";
+} from "../middleware/upload.middleware.js";
 import {
   requireJSON,
   sanitizeBody,
   validateBody,
   validateParams,
   validateQuery,
-} from "../middleware/validation.middleware";
+} from "../middleware/validation.middleware.js";
 import {
   conversationIdParamSchema,
   conversationParticipantParamSchema,
   groupConversationSchema,
   messageQuerySchema,
   messageSchema,
-} from "../validators/message.validator";
+} from "../validators/message.validator.js";
 
 const router = Router();
 

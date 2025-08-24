@@ -1,19 +1,19 @@
 // services/auth.service.ts
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 import {
   AuthenticationError,
   ConflictError,
   NotFoundError,
   ValidationError,
-} from "../utils/errors";
+} from "../utils/errors.js";
 import {
   changePasswordSchema,
   signinSchema,
   signupSchema,
   validateInput,
-} from "../validators/auth.validator";
+} from "../validators/auth.validator.js";
 
 // Types
 interface SignupData {
@@ -243,8 +243,6 @@ export const changePassword = async (
 
   return { message: "Password changed successfully" };
 };
-
-
 
 export const getUserProfile = async (userId: string) => {
   const user = await prisma.user.findUnique({

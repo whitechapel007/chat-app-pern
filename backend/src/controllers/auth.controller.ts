@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
-import { asyncHandler } from "../middleware/error.middleware";
-import * as authService from "../services/auth.services";
-import { formatSuccessResponse } from "../utils/errors";
+import { asyncHandler } from "../middleware/error.middleware.js";
+import * as authService from "../services/auth.services.js";
+import { formatSuccessResponse } from "../utils/errors.js";
 
 export const signup = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

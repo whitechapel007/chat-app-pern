@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Server, Socket } from "socket.io";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 // Global map to store userId -> socketId mapping
 const userSocketMap = new Map();
 // Helper functions for user-socket mapping

@@ -1,10 +1,13 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "../utils/errors";
-import { messageSchema, validateInput } from "../validators/message.validator";
+} from "../utils/errors.js";
+import {
+  messageSchema,
+  validateInput,
+} from "../validators/message.validator.js";
 
 // Types for message operations
 interface SendMessageData {

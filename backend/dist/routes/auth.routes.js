@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { changePassword, getProfile, logout, signin, signup, } from "../controllers/auth.controller";
-import { authenticateToken, rateLimit } from "../middleware/auth.middleware";
-import { requireJSON, sanitizeBody, validateBody, } from "../middleware/validation.middleware";
-import { changePasswordSchema, signinSchema, signupSchema, } from "../validators/auth.validator";
+import { changePassword, getProfile, logout, signin, signup, } from "../controllers/auth.controller.js";
+import { authenticateToken, rateLimit } from "../middleware/auth.middleware.js";
+import { requireJSON, sanitizeBody, validateBody, } from "../middleware/validation.middleware.js";
+import { changePasswordSchema, signinSchema, signupSchema, } from "../validators/auth.validator.js";
 const router = Router();
 // Rate limiting for auth routes
 const authRateLimit = rateLimit(10, 15 * 60 * 1000); // 10 requests per 15 minutes

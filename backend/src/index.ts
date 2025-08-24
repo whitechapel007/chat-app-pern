@@ -4,7 +4,7 @@ import { dirname, join } from "path";
 import { Server } from "socket.io";
 import { fileURLToPath } from "url";
 import app from "./app.js";
-import { createSocket } from "./socket";
+import { createSocket } from "./socket/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

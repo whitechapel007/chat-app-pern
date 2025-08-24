@@ -1,8 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
-import { asyncHandler } from "../middleware/error.middleware";
-import * as userService from "../services/user.services";
-import { formatSuccessResponse } from "../utils/errors";
-import { getOnlineUsers, getUserSocketId, isUserOnline } from "../socket";
+import { asyncHandler } from "../middleware/error.middleware.js";
+import * as userService from "../services/user.services.js";
+import {
+  getOnlineUsers,
+  getUserSocketId,
+  isUserOnline,
+} from "../socket/index.js";
+import { formatSuccessResponse } from "../utils/errors.js";
 
 // Get all users with pagination and search
 export const getAllUsers = asyncHandler(
