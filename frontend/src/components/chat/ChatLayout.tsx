@@ -98,7 +98,7 @@ const ChatLayout = () => {
         className={`
         fixed lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out
         ${rightSidebarOpen ? "translate-x-0" : "translate-x-full"}
-        w-80 h-full bg-base-100 border-l border-base-300 z-40
+        w-80 max-w-[85vw] h-full bg-base-100 border-l border-base-300 z-40
         ${selectedConversationId ? "lg:flex lg:flex-col" : "hidden"}
         right-0
       `}
@@ -119,7 +119,7 @@ const ChatLayout = () => {
         className={`
         fixed lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out
         ${onlineUsersOpen ? "translate-x-0" : "translate-x-full"}
-        w-64 h-full bg-base-100 border-l border-base-300 z-40
+        w-64 max-w-[80vw] h-full bg-base-100 border-l border-base-300 z-40
         lg:flex lg:flex-col
         right-0
       `}
