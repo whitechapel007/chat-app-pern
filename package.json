@@ -7,7 +7,7 @@
     "dev": "nodemon --watch backend/src --exec \"node --loader ts-node/esm backend/src/index.ts\"",
     "client": "cd frontend && npm run dev",
     "dev:all": "concurrently \"npm run dev\" \"npm run client\"",
-    "build": "tsc"
+    "build": "tsc && npm install && prisma generate --schema=./backend/prisma/schema.prisma && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
   "author": "",

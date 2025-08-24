@@ -4,8 +4,14 @@ import { useSocket } from "../../hooks/useSocket";
 import { useAuthStore } from "../../store/authStore";
 
 const ConnectionStatus: React.FC = () => {
-  const { isConnected, connectionStatus, lastError, onlineUserCount, connect } =
-    useSocket();
+  const {
+    isConnected,
+    connectionStatus,
+    lastError,
+    onlineUserCount,
+    connect,
+    isConnecting,
+  } = useSocket();
 
   const { user } = useAuthStore();
 
@@ -72,7 +78,7 @@ const ConnectionStatus: React.FC = () => {
         <button
           onClick={handleReconnect}
           className="btn btn-xs btn-outline"
-          disabled={connectionStatus === "connecting"}
+          disabled={isConnecting}
         >
           Retry
         </button>

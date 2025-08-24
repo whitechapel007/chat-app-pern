@@ -67,8 +67,7 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
 
     // Create new socket connection
     const socket = io(
-      import.meta.env.VITE_API_URL?.replace("/api", "") ||
-        "http://localhost:3000",
+      import.meta.env.VITE_API_URL?.replace("/api", "") || "/",
       {
         withCredentials: true,
         transports: ["websocket", "polling"],

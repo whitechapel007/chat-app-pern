@@ -1,23 +1,20 @@
-import React from 'react';
-import { useSocket } from '../../hooks/useSocket';
-import { useChatStore } from '../../store/chatStore';
-import { Wifi, WifiOff, Users } from 'lucide-react';
+import { Users, Wifi, WifiOff } from "lucide-react";
+import React from "react";
+import { useSocket } from "../../hooks/useSocket";
+import { useChatStore } from "../../store/chatStore";
 
 const OnlineUsers: React.FC = () => {
-  const { 
-    isConnected, 
-    onlineUsers, 
-    onlineUserCount, 
-    connectionStatus,
-    isUserOnline 
-  } = useSocket();
-  
+  const { isConnected, onlineUsers, onlineUserCount, connectionStatus } =
+    useSocket();
+
   const { conversations } = useChatStore();
 
   // Get user info from conversations
   const getUserInfo = (userId: string) => {
     for (const conversation of conversations) {
-      const participant = conversation.participants.find(p => p.userId === userId);
+      const participant = conversation.participants.find(
+        (p) => p.userId === userId
+      );
       if (participant) {
         return participant.user;
       }
@@ -27,9 +24,9 @@ const OnlineUsers: React.FC = () => {
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
@@ -54,20 +51,24 @@ const OnlineUsers: React.FC = () => {
             </span>
           </div>
         </div>
-        
+
         {/* Connection Status */}
         <div className="mt-2">
-          <div className={`text-xs flex items-center space-x-1 ${
-            isConnected ? 'text-success' : 'text-error'
-          }`}>
-            <div className={`w-2 h-2 rounded-full ${
-              isConnected ? 'bg-success' : 'bg-error'
-            } ${isConnected ? 'animate-pulse' : ''}`}></div>
+          <div
+            className={`text-xs flex items-center space-x-1 ${
+              isConnected ? "text-success" : "text-error"
+            }`}
+          >
+            <div
+              className={`w-2 h-2 rounded-full ${
+                isConnected ? "bg-success" : "bg-error"
+              } ${isConnected ? "animate-pulse" : ""}`}
+            ></div>
             <span>
-              {connectionStatus === 'connected' && 'Connected'}
-              {connectionStatus === 'connecting' && 'Connecting...'}
-              {connectionStatus === 'disconnected' && 'Disconnected'}
-              {connectionStatus === 'error' && 'Connection Error'}
+              {connectionStatus === "connected" && "Connected"}
+              {connectionStatus === "connecting" && "Connecting..."}
+              {connectionStatus === "disconnected" && "Disconnected"}
+              {connectionStatus === "error" && "Connection Error"}
             </span>
           </div>
         </div>
@@ -90,7 +91,7 @@ const OnlineUsers: React.FC = () => {
           <div className="space-y-1">
             {onlineUsers.map((onlineUser) => {
               const userInfo = getUserInfo(onlineUser.userId);
-              
+
               if (!userInfo) {
                 return (
                   <div
@@ -102,7 +103,9 @@ const OnlineUsers: React.FC = () => {
                         <span className="text-xs">?</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-base-content/70">Unknown User</p>
+                        <p className="text-sm text-base-content/70">
+                          Unknown User
+                        </p>
                         <p className="text-xs text-base-content/50">
                           ID: {onlineUser.userId.slice(0, 8)}...
                         </p>
@@ -149,7 +152,7 @@ const OnlineUsers: React.FC = () => {
                     </div>
 
                     {/* Socket ID (for debugging) */}
-                    {process.env.NODE_ENV === 'development' && (
+                    {process.env.NODE_ENV === "development" && (
                       <div className="text-xs text-base-content/50">
                         {onlineUser.socketId.slice(0, 6)}...
                       </div>
@@ -163,7 +166,7 @@ const OnlineUsers: React.FC = () => {
       </div>
 
       {/* Debug Info (Development Only) */}
-      {process.env.NODE_ENV === 'development' && (
+      {process.env.NODE_ENV === "development" && (
         <div className="p-2 border-t border-base-300 bg-base-200">
           <div className="text-xs text-base-content/70">
             <div>Status: {connectionStatus}</div>
@@ -173,7 +176,7 @@ const OnlineUsers: React.FC = () => {
                 <details>
                   <summary className="cursor-pointer">Socket IDs</summary>
                   <div className="mt-1 space-y-1">
-                    {onlineUsers.map(user => (
+                    {onlineUsers.map((user) => (
                       <div key={user.userId} className="text-xs">
                         {user.userId.slice(0, 8)}: {user.socketId.slice(0, 8)}
                       </div>
