@@ -138,22 +138,42 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
         console.log("📨 Received new message:", data);
 
         // Import chat store dynamically to avoid circular dependency
-        import("./chatStore").then(({ useChatStore }) => {
-          const { addMessage, loadConversations, selectedConversationId } =
-            useChatStore.getState();
+        import("./chatStore")
+          .then(({ useChatStore }) => {
+            try {
+              const { addMessage, selectedConversationId } =
+                useChatStore.getState();
 
-          if (data.message && data.message.conversationId) {
-            addMessage(data.message.conversationId, data.message);
+              if (data.message && data.message.conversationId) {
+                addMessage(data.message.conversationId, data.message);
 
-            // Show notification if not in the conversation
-            if (selectedConversationId !== data.message.conversationId) {
-              showNotification(data.message, data.sender);
+                // Show notification if not in the conversation
+                if (selectedConversationId !== data.message.conversationId) {
+                  showNotification(data.message, data.sender);
+                }
+
+                // Update the conversation's last message without reloading all conversations
+                useChatStore.setState((state) => ({
+                  conversations: Array.isArray(state.conversations)
+                    ? state.conversations.map((conv) =>
+                        conv.id === data.message.conversationId
+                          ? {
+                              ...conv,
+                              lastMessage: data.message,
+                              updatedAt: data.message.createdAt,
+                            }
+                          : conv
+                      )
+                    : state.conversations,
+                }));
+              }
+            } catch (error) {
+              console.error("Error handling new message:", error);
             }
-
-            // Refresh conversations to update last message
-            loadConversations();
-          }
-        });
+          })
+          .catch((error) => {
+            console.error("Error importing chat store:", error);
+          });
       }
     );
 
