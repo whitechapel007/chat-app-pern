@@ -7,6 +7,7 @@ export const useSocket = () => {
     socket,
     isConnected,
     onlineUsers,
+    typingUsers,
     connectionStatus,
     lastError,
     connect,
@@ -16,6 +17,9 @@ export const useSocket = () => {
     leaveRoom,
     isUserOnline,
     getUserSocketId,
+    startTyping,
+    stopTyping,
+    getTypingUsers,
   } = useSocketStore();
 
   const { user, isAuthenticated } = useAuthStore();
@@ -52,12 +56,18 @@ export const useSocket = () => {
     isUserOnline,
     getUserSocketId,
 
+    // Typing users
+    typingUsers,
+    getTypingUsers,
+
     // Actions
     sendMessage,
     joinRoom,
     leaveRoom,
     connect,
     disconnect,
+    startTyping,
+    stopTyping,
 
     // Computed values
     onlineUserCount: onlineUsers.length,

@@ -5,7 +5,6 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
-import { rateLimit } from "./middleware/auth.middleware.js";
 import { errorHandler as newErrorHandler, notFoundHandler, } from "./middleware/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
@@ -45,7 +44,7 @@ app.use("/uploads", express.static("uploads"));
 // Serve static files from frontend build
 app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 // Global rate limiting
-app.use(rateLimit(1000, 9 * 60 * 1000));
+// app.use(rateLimit(1000, 9 * 60 * 1000));
 // 1200 requests per 9 minutes (1000 for auth routes)
 // Health check endpoint
 app.get("/health", (req, res) => {

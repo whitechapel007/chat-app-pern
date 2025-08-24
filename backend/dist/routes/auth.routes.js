@@ -7,7 +7,7 @@ const router = Router();
 // Rate limiting for auth routes (increased for development)
 const authRateLimit = rateLimit(100, 15 * 60 * 1000); // 100 requests per 15 minutes
 // Public routes
-router.post("/signup", authRateLimit, requireJSON, sanitizeBody(["fullname", "username", "email"]), validateBody(signupSchema), signup);
+router.post("/signup", requireJSON, sanitizeBody(["fullname", "username", "email"]), validateBody(signupSchema), signup);
 router.post("/signin", authRateLimit, requireJSON, sanitizeBody(["email"]), validateBody(signinSchema), signin);
 // Legacy route for backward compatibility
 router.post("/login", authRateLimit, requireJSON, sanitizeBody(["email"]), validateBody(signinSchema), signin);

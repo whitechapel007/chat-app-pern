@@ -1,5 +1,6 @@
 import { Paperclip, Send, Smile } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSocket } from "../../hooks/useSocket";
 import { useChatStore } from "../../store/chatStore";
 import EmojiPicker from "./EmojiPicker";
 import FileUploadModal from "./FileUploadModal";
@@ -7,11 +8,14 @@ import FileUploadModal from "./FileUploadModal";
 const MessageInput = () => {
   const { selectedConversationId, sendMessage, isSendingMessage, uploadImage } =
     useChatStore();
+  const { startTyping, stopTyping } = useSocket();
 
   const [message, setMessage] = useState("");
   const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +26,16 @@ const MessageInput = () => {
 
     const messageContent = message.trim();
     setMessage("");
+
+    // Stop typing when sending message
+    if (isTyping && selectedConversationId) {
+      stopTyping(selectedConversationId);
+      setIsTyping(false);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
+    }
 
     // Reset textarea height
     if (textareaRef.current) {
@@ -48,12 +62,41 @@ const MessageInput = () => {
   };
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(e.target.value);
+    const newValue = e.target.value;
+    setMessage(newValue);
 
     // Auto-resize textarea
     const textarea = e.target;
     textarea.style.height = "auto";
     textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+
+    // Handle typing indicators
+    if (selectedConversationId) {
+      if (newValue.trim() && !isTyping) {
+        // User started typing
+        setIsTyping(true);
+        startTyping(selectedConversationId);
+      }
+
+      // Clear existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      // Set new timeout to stop typing after 3 seconds of inactivity
+      if (newValue.trim()) {
+        typingTimeoutRef.current = setTimeout(() => {
+          if (isTyping) {
+            setIsTyping(false);
+            stopTyping(selectedConversationId);
+          }
+        }, 3000);
+      } else if (isTyping) {
+        // User cleared the input, stop typing immediately
+        setIsTyping(false);
+        stopTyping(selectedConversationId);
+      }
+    }
   };
 
   const handleFileUpload = () => {
@@ -91,6 +134,26 @@ const MessageInput = () => {
       setMessage(message + emoji);
     }
   };
+
+  // Cleanup typing state when conversation changes or component unmounts
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      if (isTyping && selectedConversationId) {
+        stopTyping(selectedConversationId);
+      }
+    };
+  }, [selectedConversationId, isTyping, stopTyping]);
+
+  // Stop typing when conversation changes
+  useEffect(() => {
+    if (isTyping && typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      setIsTyping(false);
+    }
+  }, [selectedConversationId]);
 
   if (!selectedConversationId) {
     return null;

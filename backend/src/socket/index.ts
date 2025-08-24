@@ -191,6 +191,87 @@ function createSocket(io: Server) {
         }
       });
 
+      // Handle typing events
+      socket.on("typing_start", async (data: { conversationId: string }) => {
+        if (!socket.user) return;
+
+        console.log(
+          `⌨️ ${socket.user.fullName} started typing in conversation ${data.conversationId}`
+        );
+
+        try {
+          // Get conversation participants to know who to notify
+          const conversation = await prisma.conversation.findUnique({
+            where: { id: data.conversationId },
+            include: {
+              participants: {
+                select: { userId: true },
+              },
+            },
+          });
+
+          if (!conversation) return;
+
+          // Notify all other participants in the conversation
+          const otherParticipants = conversation.participants
+            .filter((p) => p.userId !== socket.user!.id)
+            .map((p) => p.userId);
+
+          sendToUsers(otherParticipants, "user_typing", {
+            userId: socket.user.id,
+            conversationId: data.conversationId,
+            isTyping: true,
+            userInfo: {
+              id: socket.user.id,
+              fullName: socket.user.fullName,
+              username: socket.user.username,
+            },
+          });
+        } catch (error) {
+          console.error("Error handling typing_start:", error);
+        }
+      });
+
+      socket.on("typing_stop", async (data: { conversationId: string }) => {
+        if (!socket.user) return;
+
+        console.log(
+          `⌨️ ${socket.user.fullName} stopped typing in conversation ${data.conversationId}`
+        );
+
+        try {
+          // Get conversation participants to know who to notify
+          const conversation = await prisma.conversation.findUnique({
+            where: { id: data.conversationId },
+            include: {
+              participants: {
+                select: { userId: true },
+              },
+            },
+          });
+
+          if (!conversation) return;
+
+          // Notify all other participants in the conversation
+          const otherParticipants = conversation.participants
+            .filter((p) => p.userId !== socket.user!.id)
+            .map((p) => p.userId);
+
+          sendToUsers(otherParticipants, "user_typing", {
+            userId: socket.user.id,
+            conversationId: data.conversationId,
+            isTyping: false,
+            userInfo: {
+              id: socket.user.id,
+              fullName: socket.user.fullName,
+              username: socket.user.username,
+            },
+          });
+        } catch (error) {
+          console.error("Error handling typing_stop:", error);
+        }
+      });
+
       socket.on("disconnect", async () => {
         if (socket.user) {
           console.log(

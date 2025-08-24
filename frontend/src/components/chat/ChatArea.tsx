@@ -3,6 +3,7 @@ import { useAuthStore } from "../../store/authStore";
 import { useChatStore } from "../../store/chatStore";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
+import TypingIndicator from "./TypingIndicator";
 
 interface ChatAreaProps {
   onToggleRightSidebar?: () => void;
@@ -157,13 +158,18 @@ const ChatArea = ({ onToggleRightSidebar }: ChatAreaProps) => {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-hidden min-h-0">
+      <div className="flex-1 overflow-hidden min-h-0 flex flex-col">
         {isLoadingMessages ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="loading loading-spinner loading-lg"></div>
           </div>
         ) : (
-          <MessageList />
+          <>
+            <div className="flex-1 overflow-hidden">
+              <MessageList />
+            </div>
+            <TypingIndicator />
+          </>
         )}
       </div>
 

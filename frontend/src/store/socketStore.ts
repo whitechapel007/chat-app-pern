@@ -8,10 +8,21 @@ interface OnlineUser {
   isOnline: boolean;
 }
 
+interface TypingUser {
+  userId: string;
+  conversationId: string;
+  userInfo: {
+    id: string;
+    fullName: string;
+    username: string;
+  };
+}
+
 interface SocketState {
   socket: Socket | null;
   isConnected: boolean;
   onlineUsers: OnlineUser[];
+  typingUsers: TypingUser[];
   connectionStatus: "disconnected" | "connecting" | "connected" | "error";
   reconnectAttempts: number;
   lastError: string | null;
@@ -36,6 +47,12 @@ interface SocketActions {
   removeOnlineUser: (userId: string) => void;
   isUserOnline: (userId: string) => boolean;
   getUserSocketId: (userId: string) => string | undefined;
+  // Typing actions
+  startTyping: (conversationId: string) => void;
+  stopTyping: (conversationId: string) => void;
+  setUserTyping: (typingUser: TypingUser) => void;
+  removeUserTyping: (userId: string, conversationId: string) => void;
+  getTypingUsers: (conversationId: string) => TypingUser[];
   reset: () => void;
 }
 
@@ -45,6 +62,7 @@ const initialState: SocketState = {
   socket: null,
   isConnected: false,
   onlineUsers: [],
+  typingUsers: [],
   connectionStatus: "disconnected",
   reconnectAttempts: 0,
   lastError: null,
@@ -262,9 +280,29 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
     // Typing indicators
     socket.on(
       "user_typing",
-      (data: { userId: string; conversationId: string; isTyping: boolean }) => {
+      (data: {
+        userId: string;
+        conversationId: string;
+        isTyping: boolean;
+        userInfo: {
+          id: string;
+          fullName: string;
+          username: string;
+        };
+      }) => {
         console.log("⌨️ User typing:", data);
-        // Handle typing indicators if needed
+
+        if (data.isTyping) {
+          // User started typing
+          get().setUserTyping({
+            userId: data.userId,
+            conversationId: data.conversationId,
+            userInfo: data.userInfo,
+          });
+        } else {
+          // User stopped typing
+          get().removeUserTyping(data.userId, data.conversationId);
+        }
       }
     );
 
@@ -350,6 +388,54 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
   getUserSocketId: (userId: string) => {
     const { onlineUsers } = get();
     return onlineUsers.find((user) => user.userId === userId)?.socketId;
+  },
+
+  // Typing actions
+  startTyping: (conversationId: string) => {
+    const { socket, isConnected } = get();
+    if (socket && isConnected) {
+      socket.emit("typing_start", { conversationId });
+    }
+  },
+
+  stopTyping: (conversationId: string) => {
+    const { socket, isConnected } = get();
+    if (socket && isConnected) {
+      socket.emit("typing_stop", { conversationId });
+    }
+  },
+
+  setUserTyping: (typingUser: TypingUser) => {
+    const { typingUsers } = get();
+    const existingIndex = typingUsers.findIndex(
+      (user) =>
+        user.userId === typingUser.userId &&
+        user.conversationId === typingUser.conversationId
+    );
+
+    if (existingIndex >= 0) {
+      // Update existing typing user
+      const updatedTypingUsers = [...typingUsers];
+      updatedTypingUsers[existingIndex] = typingUser;
+      set({ typingUsers: updatedTypingUsers });
+    } else {
+      // Add new typing user
+      set({ typingUsers: [...typingUsers, typingUser] });
+    }
+  },
+
+  removeUserTyping: (userId: string, conversationId: string) => {
+    const { typingUsers } = get();
+    const filteredTypingUsers = typingUsers.filter(
+      (user) =>
+        !(user.userId === userId && user.conversationId === conversationId)
+    );
+    set({ typingUsers: filteredTypingUsers });
+  },
+
+  getTypingUsers: (conversationId: string) => {
+    const { typingUsers } = get();
+    return typingUsers.filter((user) => user.conversationId === conversationId);
   },
 
   reset: () => {
