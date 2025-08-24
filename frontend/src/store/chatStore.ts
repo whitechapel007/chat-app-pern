@@ -11,7 +11,10 @@ import type {
 interface ChatActions {
   // Conversations
   loadConversations: () => Promise<void>;
+  loadConversationsRealtime: () => void;
   selectConversation: (conversationId: string | null) => void;
+  addConversation: (conversation: Conversation) => void;
+  updateConversation: (conversation: Conversation) => void;
   // Messages
   loadMessages: (conversationId: string) => Promise<void>;
   sendMessage: (conversationId: string, data: SendMessageData) => Promise<void>;
@@ -67,6 +70,26 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     } catch (error) {
       console.error("Failed to load conversations:", error);
     }
+  },
+
+  loadConversationsRealtime: () => {
+    // This function enables real-time conversation updates via WebSocket
+    // The actual updates are handled by the socket store event listeners
+    console.log("🔄 Real-time conversation updates enabled");
+  },
+
+  addConversation: (conversation) => {
+    set((state) => ({
+      conversations: [conversation, ...state.conversations],
+    }));
+  },
+
+  updateConversation: (conversation) => {
+    set((state) => ({
+      conversations: state.conversations.map((conv) =>
+        conv.id === conversation.id ? conversation : conv
+      ),
+    }));
   },
 
   selectConversation: (conversationId) => {

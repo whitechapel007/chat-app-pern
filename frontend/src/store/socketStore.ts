@@ -179,10 +179,6 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
 
     // Online users updates
     socket.on("users_online", (users: OnlineUser[]) => {
-      console.log("👥 Online users updated:", users);
-      console.log("📊 Number of online users:", users.length);
-      console.log("📋 Online users data:", JSON.stringify(users, null, 2));
-
       set({ onlineUsers: users });
       console.log("✅ Updated socketStore onlineUsers state");
     });
@@ -204,6 +200,64 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
       console.log("👋 User left:", userData);
       get().removeOnlineUser(userData.userId);
     });
+
+    // Conversation events
+    socket.on(
+      "conversation_created",
+      (data: { conversation: Conversation; creator: User }) => {
+        console.log("🆕 New conversation created:", data);
+
+        // Import chat store dynamically to avoid circular dependency
+        import("./chatStore")
+          .then(({ useChatStore }) => {
+            try {
+              const { addConversation } = useChatStore.getState();
+
+              // Add the new conversation to the list
+              addConversation(data.conversation);
+
+              // Show notification
+              if (Notification.permission === "granted") {
+                new Notification(
+                  `New conversation: ${data.conversation.name || "Group Chat"}`,
+                  {
+                    body: `Created by ${data.creator?.fullName || "Someone"}`,
+                    icon: data.creator?.profilePic || "/default-avatar.png",
+                  }
+                );
+              }
+            } catch (error) {
+              console.error("Error handling conversation created:", error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error importing chat store:", error);
+          });
+      }
+    );
+
+    socket.on(
+      "conversation_updated",
+      (data: { conversation: Conversation }) => {
+        console.log("📝 Conversation updated:", data);
+
+        // Import chat store dynamically to avoid circular dependency
+        import("./chatStore")
+          .then(({ useChatStore }) => {
+            try {
+              const { updateConversation } = useChatStore.getState();
+
+              // Update the conversation in the list
+              updateConversation(data.conversation);
+            } catch (error) {
+              console.error("Error handling conversation updated:", error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error importing chat store:", error);
+          });
+      }
+    );
 
     // Typing indicators
     socket.on(
