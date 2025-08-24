@@ -63,21 +63,7 @@ export declare const createGroupConversation: (creatorId: string, conversationDa
     type: import(".prisma/client").$Enums.ConversationType;
     description: string | null;
 }>;
-export declare const addParticipantToGroup: (conversationId: string, userId: string, addedByUserId: string) => Promise<{
-    user: {
-        id: string;
-        username: string;
-        fullName: string;
-        profilePic: string;
-    };
-} & {
-    id: string;
-    conversationId: string;
-    userId: string;
-    role: import(".prisma/client").$Enums.ParticipantRole;
-    joinedAt: Date;
-    leftAt: Date | null;
-}>;
+export declare const addParticipantToGroup: (conversationId: string, userId: string, addedByUserId: string) => Promise<any>;
 export declare const removeParticipantFromGroup: (conversationId: string, userId: string, removedByUserId: string) => Promise<{
     success: boolean;
 }>;
@@ -260,7 +246,7 @@ export declare const getUserConversations: (userId: string) => Promise<({
     type: import(".prisma/client").$Enums.ConversationType;
     description: string | null;
 })[]>;
-export declare const getConversationById: (conversationId: string) => Promise<({
+export declare const getConversationById: (conversationId: string) => Promise<{
     participants: ({
         user: {
             id: string;
@@ -284,6 +270,6 @@ export declare const getConversationById: (conversationId: string) => Promise<({
     updatedAt: Date;
     type: import(".prisma/client").$Enums.ConversationType;
     description: string | null;
-}) | null>;
+}>;
 export {};
 //# sourceMappingURL=message.services.d.ts.map
