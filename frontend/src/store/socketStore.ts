@@ -217,6 +217,13 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
     socket.on("user_left", (userData: { userId: string }) => {
       console.log("👋 User left:", userData);
       get().removeOnlineUser(userData.userId);
+
+      // Clear typing state for the user who left
+      const { typingUsers } = get();
+      const filteredTypingUsers = typingUsers.filter(
+        (user) => user.userId !== userData.userId
+      );
+      set({ typingUsers: filteredTypingUsers });
     });
 
     // Conversation events
