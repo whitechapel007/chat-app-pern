@@ -60,7 +60,7 @@ app.use("/uploads", express.static("uploads"));
 app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
 // Global rate limiting
-app.use(rateLimit(1200, 9 * 60 * 1000));
+app.use(rateLimit(1000, 9 * 60 * 1000));
 // 1200 requests per 9 minutes (1000 for auth routes)
 
 // Health check endpoint

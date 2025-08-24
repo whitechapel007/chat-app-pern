@@ -14,4 +14,4 @@ WHERE type = 'DIRECT';
 -- Add an index to improve participant lookups for active participants
 CREATE INDEX IF NOT EXISTS idx_conversation_participants_active
 ON conversation_participants (conversation_id, user_id)
-WHERE left_at IS NULL;
+WHERE "leftAt" IS NULL;

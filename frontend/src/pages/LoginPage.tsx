@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import PasswordInput from "../components/ui/PasswordInput";
 import { authAPI } from "../services/auth";
 import { useAuthStore } from "../store/authStore";
 
@@ -86,28 +87,18 @@ const LoginPage = () => {
           </div>
 
           {/* Password Field */}
-          <div>
-            <label className="block text-gray-600 text-sm font-medium mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full px-4 py-4 bg-gray-100 rounded-lg border-0 text-gray-900 placeholder-gray-500 focus:bg-gray-200 focus:outline-none transition-colors"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
-                },
-              })}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+          <PasswordInput
+            label="Password"
+            placeholder="••••••••"
+            error={errors.password?.message}
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters",
+              },
+            })}
+          />
 
           {/* Submit Button */}
           <button

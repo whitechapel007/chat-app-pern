@@ -1,4 +1,3 @@
-import type { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
 import {
   AuthorizationError,
@@ -36,7 +35,7 @@ export const getOrCreateDirectConversation = async (
   user2Id: string
 ) => {
   // Use a transaction to handle race conditions
-  return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  return await prisma.$transaction(async (tx) => {
     // Find existing direct conversation between these two users
     const existingConversation = await tx.conversation.findFirst({
       where: {
@@ -78,8 +77,8 @@ export const getOrCreateDirectConversation = async (
     // Verify this is exactly a conversation between these two users
     if (existingConversation) {
       const participantIds = existingConversation.participants
-        .filter((p: any) => !p.leftAt) // Only active participants
-        .map((p: any) => p.userId);
+        .filter((p) => !p.leftAt) // Only active participants
+        .map((p) => p.userId);
 
       if (
         participantIds.length === 2 &&
@@ -158,8 +157,8 @@ export const getOrCreateDirectConversation = async (
 
         if (retryConversation) {
           const participantIds = retryConversation.participants
-            .filter((p: any) => !p.leftAt) // Only active participants
-            .map((p: any) => p.userId);
+            .filter((p) => !p.leftAt) // Only active participants
+            .map((p) => p.userId);
 
           if (
             participantIds.length === 2 &&
@@ -243,7 +242,7 @@ export const createGroupConversation = async (
   await prisma.message.create({
     data: {
       content: `${
-        users.find((u: any) => u.id === creatorId)?.fullName || "Someone"
+        users.find((u) => u.id === creatorId)?.fullName || "Someone"
       } created the group "${name}"`,
       type: "SYSTEM",
       senderId: creatorId,
@@ -260,7 +259,7 @@ export const addParticipantToGroup = async (
   userId: string,
   addedByUserId: string
 ) => {
-  return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  return await prisma.$transaction(async (tx) => {
     // Check if conversation exists and is a group
     const conversation = await tx.conversation.findUnique({
       where: { id: conversationId },
@@ -388,7 +387,7 @@ export const removeParticipantFromGroup = async (
   userId: string,
   removedByUserId: string
 ) => {
-  return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  return await prisma.$transaction(async (tx) => {
     // Check if conversation exists and is a group
     const conversation = await tx.conversation.findUnique({
       where: { id: conversationId },
@@ -490,7 +489,7 @@ export const updateGroupConversation = async (
   userId: string,
   updates: { name?: string; description?: string }
 ) => {
-  return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  return await prisma.$transaction(async (tx) => {
     // Check if conversation exists and is a group
     const conversation = await tx.conversation.findUnique({
       where: { id: conversationId },

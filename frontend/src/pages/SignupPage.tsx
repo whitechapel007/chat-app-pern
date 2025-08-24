@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import PasswordInput from "../components/ui/PasswordInput";
 import { authAPI } from "../services/auth";
 import { useAuthStore } from "../store/authStore";
 
@@ -113,14 +114,14 @@ const SignupPage = () => {
                 placeholder="samlee01"
                 className="w-full px-4 py-4 bg-gray-100 rounded-lg border-0 text-gray-900 placeholder-gray-500 focus:bg-gray-200 focus:outline-none transition-colors"
                 {...register("username", {
-                  required: "Last name is required",
+                  required: "username is required",
                   minLength: {
-                    value: 2,
-                    message: "Last name must be at least 2 characters long",
+                    value: 3,
+                    message: "username must be at least 3 characters long",
                   },
                   pattern: {
-                    value: /^[a-zA-Z]+$/,
-                    message: "Last name must contain only letters",
+                    value: /^[a-zA-Z0-9]+$/,
+                    message: "username must contain only letters and numbers",
                   },
                 })}
               />
@@ -157,54 +158,34 @@ const SignupPage = () => {
           </div>
 
           {/* Password Field */}
-          <div>
-            <label className="block text-gray-600 text-sm font-medium mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full px-4 py-4 bg-gray-100 rounded-lg border-0 text-gray-900 placeholder-gray-500 focus:bg-gray-200 focus:outline-none transition-colors"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters long",
-                },
-                pattern: {
-                  value:
-                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-                  message:
-                    "Password must contain uppercase, lowercase, number, and special character",
-                },
-              })}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+          <PasswordInput
+            label="Password"
+            placeholder="••••••••"
+            error={errors.password?.message}
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters long",
+              },
+              pattern: {
+                value:
+                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+                message:
+                  "Password must contain uppercase, lowercase, number, and special character",
+              },
+            })}
+          />
 
           {/* Confirm Password Field */}
-          <div>
-            <label className="block text-gray-600 text-sm font-medium mb-2">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full px-4 py-4 bg-gray-100 rounded-lg border-0 text-gray-900 placeholder-gray-500 focus:bg-gray-200 focus:outline-none transition-colors"
-              {...register("confirmPassword", {
-                required: "Please confirm your password",
-              })}
-            />
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
+          <PasswordInput
+            label="Confirm Password"
+            placeholder="••••••••"
+            error={errors.confirmPassword?.message}
+            {...register("confirmPassword", {
+              required: "Please confirm your password",
+            })}
+          />
 
           {/* Gender Field */}
           <div>

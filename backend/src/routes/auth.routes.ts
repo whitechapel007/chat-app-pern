@@ -21,8 +21,8 @@ import {
 
 const router = Router();
 
-// Rate limiting for auth routes
-const authRateLimit = rateLimit(10, 15 * 60 * 1000); // 10 requests per 15 minutes
+// Rate limiting for auth routes (increased for development)
+const authRateLimit = rateLimit(100, 15 * 60 * 1000); // 100 requests per 15 minutes
 
 // Public routes
 router.post(

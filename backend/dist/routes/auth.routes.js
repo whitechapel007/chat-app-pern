@@ -4,8 +4,8 @@ import { authenticateToken, rateLimit } from "../middleware/auth.middleware.js";
 import { requireJSON, sanitizeBody, validateBody, } from "../middleware/validation.middleware.js";
 import { changePasswordSchema, signinSchema, signupSchema, } from "../validators/auth.validator.js";
 const router = Router();
-// Rate limiting for auth routes
-const authRateLimit = rateLimit(10, 15 * 60 * 1000); // 10 requests per 15 minutes
+// Rate limiting for auth routes (increased for development)
+const authRateLimit = rateLimit(100, 15 * 60 * 1000); // 100 requests per 15 minutes
 // Public routes
 router.post("/signup", authRateLimit, requireJSON, sanitizeBody(["fullname", "username", "email"]), validateBody(signupSchema), signup);
 router.post("/signin", authRateLimit, requireJSON, sanitizeBody(["email"]), validateBody(signinSchema), signin);
