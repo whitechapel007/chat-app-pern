@@ -27,11 +27,17 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
       return conversation.name || "Group Chat";
     }
 
+    // Ensure we have a valid user and participants array
+    if (!user?.id || !Array.isArray(conversation.participants)) {
+      return "Unknown User";
+    }
+
     // For direct messages, show the other participant's name
     const otherParticipant = conversation.participants.find(
-      (p) => p.userId !== user?.id
+      (p) => p && p.userId && p.userId !== user.id
     );
-    return otherParticipant?.user.fullName || "Unknown User";
+
+    return otherParticipant?.user?.fullName || "Unknown User";
   };
 
   const getConversationAvatar = (conversation: Conversation) => {
@@ -39,10 +45,15 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
       return null; // We'll show a group icon
     }
 
+    // Ensure we have a valid user and participants array
+    if (!user?.id || !Array.isArray(conversation.participants)) {
+      return null;
+    }
+
     const otherParticipant = conversation.participants.find(
-      (p) => p.userId !== user?.id
+      (p) => p && p.userId && p.userId !== user.id
     );
-    return otherParticipant?.user.profilePic;
+    return otherParticipant?.user?.profilePic || null;
   };
 
   const getInitials = (name: string) => {
@@ -55,14 +66,26 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
   };
 
   const isOnline = (conversation: Conversation) => {
+    // Group conversations don't show online status
     if (conversation.type === "GROUP") return false;
 
+    // Ensure we have a valid user and participants array
+    if (!user?.id || !Array.isArray(conversation.participants)) return false;
+
+    // Find the other participant in the direct conversation
     const otherParticipant = conversation.participants.find(
-      (p) => p.userId !== user?.id
+      (p) => p && p.userId && p.userId !== user.id
     );
 
-    // Use real-time socket data instead of database value
-    return otherParticipant ? isUserOnline(otherParticipant.userId) : false;
+    // Use real-time socket data to check if the other user is online
+    if (!otherParticipant?.userId) return false;
+
+    try {
+      return isUserOnline(otherParticipant.userId);
+    } catch (error) {
+      console.warn("Error checking user online status:", error);
+      return false;
+    }
   };
 
   const formatLastMessageTime = (dateString: string) => {
@@ -74,33 +97,50 @@ const ConversationList = ({ onConversationSelect }: ConversationListProps) => {
   };
 
   const getLastMessagePreview = (conversation: Conversation) => {
-    if (!conversation.messages[0]) return "No messages yet";
+    // Check if conversation has messages and the first message exists
+    if (
+      !conversation.messages ||
+      !Array.isArray(conversation.messages) ||
+      !conversation.messages[0]
+    ) {
+      return "No messages yet";
+    }
 
-    const { content, type, senderId } = conversation.messages[0];
+    const lastMessage = conversation.messages[0];
+    const { content, type, senderId } = lastMessage;
+
+    // Safely check if the message is from the current user
     const isFromMe = senderId === user?.id;
     const prefix = isFromMe ? "You: " : "";
 
+    // Handle different message types
     switch (type) {
       case "IMAGE":
         return `${prefix}📷 Image`;
       case "FILE":
         return `${prefix}📎 File`;
       case "SYSTEM":
-        return content;
+        return content || "System message";
       default:
-        return `${prefix}${content}`;
+        return `${prefix}${content || "Message"}`;
     }
   };
 
   // Filter conversations based on search query
   const filteredConversations = conversations.filter((conversation) => {
-    if (!searchQuery) return true;
+    if (!searchQuery || !searchQuery.trim()) return true;
 
-    const name = getConversationName(conversation).toLowerCase();
-    const lastMessage = conversation.messages[0]?.content?.toLowerCase() || "";
-    const query = searchQuery.toLowerCase();
+    try {
+      const name = getConversationName(conversation).toLowerCase();
+      const lastMessage =
+        conversation.messages?.[0]?.content?.toLowerCase() || "";
+      const query = searchQuery.toLowerCase().trim();
 
-    return name.includes(query) || lastMessage.includes(query);
+      return name.includes(query) || lastMessage.includes(query);
+    } catch (error) {
+      console.warn("Error filtering conversation:", error);
+      return true; // Include conversation if there's an error
+    }
   });
 
   const handleConversationClick = (conversationId: string) => {

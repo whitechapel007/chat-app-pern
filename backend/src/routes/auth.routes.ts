@@ -27,7 +27,6 @@ const authRateLimit = rateLimit(100, 15 * 60 * 1000); // 100 requests per 15 min
 // Public routes
 router.post(
   "/signup",
-  authRateLimit,
   requireJSON,
   sanitizeBody(["fullname", "username", "email"]),
   validateBody(signupSchema),

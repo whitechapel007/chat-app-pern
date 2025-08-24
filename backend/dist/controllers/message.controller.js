@@ -223,6 +223,17 @@ export const createGroupConversation = asyncHandler(async (req, res, next) => {
     const creatorId = req.user.id;
     const conversationData = req.body;
     const result = await messageService.createGroupConversation(creatorId, conversationData);
+    // Send real-time notification to all participants about new conversation
+    if (result && result.participants) {
+        const participantIds = result.participants
+            .map((p) => p.userId)
+            .filter((userId) => userId !== creatorId); // Exclude creator
+        const sentTo = sendToUsers(participantIds, "conversation_created", {
+            conversation: result,
+            creator: req.user,
+        });
+        console.log(`📱 New conversation notification sent to ${sentTo.length}/${participantIds.length} participants`);
+    }
     res
         .status(201)
         .json(formatSuccessResponse(result, "Group conversation created successfully"));
