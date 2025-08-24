@@ -7,7 +7,7 @@
     "dev": "nodemon --watch backend/src --exec \"node --loader ts-node/esm backend/src/index.ts\"",
     "client": "cd frontend && npm run dev",
     "dev:all": "concurrently \"npm run dev\" \"npm run client\"",
-    "build": "tsc && npm install && prisma generate --schema=./backend/src/prisma/schema.prisma && npm install --prefix frontend && npm run build --prefix frontend",
+    "build": "npm install && tsc && prisma generate --schema=./backend/src/prisma/schema.prisma && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "node backend/dist/index.js"
   },
   "keywords": [],
@@ -24,7 +24,6 @@
     "concurrently": "^9.2.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2"
   },
   "dependencies": {
